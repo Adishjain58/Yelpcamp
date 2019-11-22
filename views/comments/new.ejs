@@ -3,30 +3,10 @@
   <div class="row">
     <h1 class="col-12 text-center mt-5">ADD new Comment to <%= camp.name %></h1>
     <div style="width:30%;margin:20px auto">
-      <form
-        class="col-12"
-        action="/campgrounds/<%= camp._id%>/comments"
-        method="post"
-      >
+      <form class="col-12" action="/campgrounds/<%= camp._id%>/comments" method="post">
         <div class="form-group">
           <label for="name">Enter Text for comment</label>
-          <input
-            type="text"
-            name="comment[text]"
-            id="name"
-            class="form-control"
-            placeholder="Text"
-          />
-        </div>
-        <div class="form-group">
-          <label for="url">Enter Author Name</label>
-          <input
-            type="text"
-            name="comment[author]"
-            id="url"
-            class="form-control"
-            placeholder="Author"
-          />
+          <input type="text" name="comment[text]" id="name" class="form-control" placeholder="Text" />
         </div>
         <div class="form-group">
           <button class="btn btn-outline-primary btn-block">

@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const LocalStratergy = require("passport-local");
+const methodOverride = require("method-override");
 
 // Routes Import
 const commentRoutes = require("./routes/comments");
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 
 // Configure passport
 app.use(
@@ -45,7 +47,7 @@ app.use((req, res, next) => {
 // To use all routes
 app.use(indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
-app.use(commentRoutes);
+app.use("/campgrounds/:id/comments", commentRoutes);
 
 // To retrieve the databse url.
 const db = require("./config/keys").mongoURI;

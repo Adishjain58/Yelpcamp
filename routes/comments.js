@@ -1,8 +1,9 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const Campground = require("../models/campground");
 const Comment = require("../models/comment");
 
+// Middleware
 const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
@@ -10,24 +11,27 @@ const isLoggedIn = (req, res, next) => {
   res.redirect("/login");
 };
 
-// =====================
-// Comment Routes
-// =====================
-
-router.get("/campgrounds/:id/comments/new", isLoggedIn, (req, res) => {
+// omments new
+router.get("/new", isLoggedIn, (req, res) => {
   Campground.findById(req.params.id)
     .then(camp => res.render("comments/new", { camp }))
     .catch(err => console.log(err));
 });
 
 // Route to add a new comment
-router.post("/campgrounds/:id/comments", isLoggedIn, (req, res) => {
+router.post("/", isLoggedIn, (req, res) => {
   // Lookup Campground using id.
   Campground.findById(req.params.id)
     .then(camp => {
       // Create new comment
       Comment.create(req.body.comment)
         .then(comment => {
+          // add username and id to comment
+          comment.author.id = req.user._id;
+          comment.author.username = req.user.username;
+
+          // Save the comment
+          comment.save();
           // Connect new comment to campground.
           camp.comments.push(comment);
           camp
