@@ -13,6 +13,7 @@
 			integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
 			crossorigin="anonymous" />
 		<link rel="stylesheet" href="/stylesheets/main.css" />
+
 	</head>
 
 	<body>
@@ -42,3 +43,14 @@
 				</ul>
 			</div>
 		</nav>
+		<div class="container">
+			<% if(error && error.length>0){%>
+			<div class="alert alert-danger">
+				<%= error%>
+			</div>
+			<%}%> <% if(success && success.length>0){%>
+			<div class="alert alert-success">
+				<%= success%>
+			</div>
+			<%}%>
+    </div>
