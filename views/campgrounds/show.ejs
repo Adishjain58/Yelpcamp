@@ -7,7 +7,7 @@ dateFinder=function(date,divider){
     let date1=new Date(date);
     let date2= new Date();
     return Math.trunc((date2-date1)/divider) }
-    
+
 dateCalculator = function (comment) {
         var res = dateFinder(comment, 86400000) >= 1 ? dateFinder(comment, 86400000) + days : dateFinder(comment, 3600000) >= 1 ? dateFinder(comment, 3600000) + hours : dateFinder(comment, 60000) >= 1 ? dateFinder(comment, 60000) + minutes : dateFinder(comment, 1000) + seconds;
         return res;
@@ -15,79 +15,85 @@ dateCalculator = function (comment) {
    
 %>
 
+<script type="text/JavaScript">
+        function timeRefresh(timeoutPeriod) {
+            setTimeout("location.reload(true);", timeoutPeriod);
+        }
+    </script>
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3 mb-3">
-            <p class="lead">Yelp Camp</p>
-            <div class="list-group">
-                <li class="list-group-item active">Info1</li>
-                <li class="list-group-item">Info2</li>
-                <li class="list-group-item">Info3</li>
+<body onLoad="JavaScript:timeRefresh(5000);">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 mb-3">
+                <p class="lead">Yelp Camp</p>
+                <div class="list-group">
+                    <li class="list-group-item active">Info1</li>
+                    <li class="list-group-item">Info2</li>
+                    <li class="list-group-item">Info3</li>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-9">
-            <div class="img-thumbnail mb-3">
-                <img class="img-fluid" src="<%= camp.image %>" alt="" />
-                <div class="figure-caption px-2 py-2 d-flex justify-content-between">
-                    <h4><a href="#"><%= camp.name %></a></h4>
-                    <h4 class="justify-content-end">$9.00/night</h4>
-                </div>
-                <p class="px-2"><%= camp.description %></p>
-                <p class="px-2"><em>Submitted By <%=camp.author.username%></em></p>
-                <% if(currentUser && camp.author.id.equals(currentUser._id)){ %>
+            <div class="col-sm-9">
+                <div class="img-thumbnail mb-3">
+                    <img class="img-fluid" src="<%= "../"+camp.image %>" alt="" />
+                    <div class="figure-caption px-2 py-2 d-flex justify-content-between">
+                        <h4><a href="#"><%= camp.name %></a></h4>
+                        <h4 class="justify-content-end">$9.00/night</h4>
+                    </div>
+                    <p class="px-2"><%= camp.description %></p>
+                    <p class="px-2"><em>Submitted By <%=camp.author.username%></em></p>
+                    <% if(currentUser && camp.author.id.equals(currentUser._id)){ %>
 
-                <div class="d-flex">
-                    <a href="/campgrounds/<%=camp._id%>/edit" class="btn btn-outline-warning m-3">Edit Camp</a>
-                    <form action="/campgrounds/<%=camp._id%>?_method=DELETE" method="post">
-                        <button type="submit" class="btn btn-outline-danger mt-3">
-                            Delete Camp
-                        </button>
-                    </form>
-                </div>
-                <%}%>
+                    <div class="d-flex">
+                        <a href="/campgrounds/<%=camp._id%>/edit" class="btn btn-outline-warning m-3">Edit Camp</a>
+                        <form action="/campgrounds/<%=camp._id%>?_method=DELETE" method="post">
+                            <button type="submit" class="btn btn-outline-danger mt-3">
+                                Delete Camp
+                            </button>
+                        </form>
+                    </div>
+                    <%}%>
       </div>
       <div class="jumbotron">
         <div class="text-right">
           <a
             class="btn btn-outline-success ml-3"
             href="/campgrounds/<%=camp._id%>/comments/new"
-                >
-                <i class="fa fa-paper-plane"></i> Add new Comment</a>
-            </div>
-            <hr />
-            <% camp.comments.forEach(comment=>{ %>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="d-flex justify-content-between">
-                        <strong><%= comment.author.username %></strong>
-                        <span class="text-right" id="date">
-                            <%= 
+                    >
+                    <i class="fa fa-paper-plane"></i> Add new Comment</a>
+                </div>
+                <hr />
+                <% camp.comments.forEach(comment=>{ %>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="d-flex justify-content-between">
+                            <strong><%= comment.author.username %></strong>
+                            <span class="text-right" id="date">
+                                <%= 
                             dateCalculator(comment.createdAt)
                             %>
-                        </span>
-                    </div>
-                    <p><%= comment.text %></p>
-                    <% if (currentUser && comment.author.id.equals(currentUser._id)) {%>
+                            </span>
+                        </div>
+                        <p><%= comment.text %></p>
+                        <% if (currentUser && comment.author.id.equals(currentUser._id)) {%>
 
-                    <div class="d-flex">
-                        <a href="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>/edit"
-                            class="btn btn-outline-warning m-3 btn-sm">Edit Comment</a>
-                        <form action="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>?_method=DELETE"
-                            method="post">
-                            <button type="submit" class="btn btn-sm btn-outline-danger mt-3">
-                                Delete Comment
-                            </button>
-                        </form>
+                        <div class="d-flex">
+                            <a href="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>/edit"
+                                class="btn btn-outline-warning m-3 btn-sm">Edit Comment</a>
+                            <form action="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>?_method=DELETE"
+                                method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger mt-3">
+                                    Delete Comment
+                                </button>
+                            </form>
+                        </div>
+                        <% }%>
                     </div>
-                    <% }%>
                 </div>
-            </div>
 
-            <% }) %>
+                <% }) %>
+            </div>
         </div>
     </div>
-</div>
-</div>
+    </div>
 
-<% include ../partials/footer%>
+    <% include ../partials/footer%>
