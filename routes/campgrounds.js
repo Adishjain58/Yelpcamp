@@ -4,6 +4,7 @@ const Campground = require("../models/campground");
 const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 // Set storage engine to upload the images
 const storage = multer.diskStorage({
@@ -15,6 +16,18 @@ const storage = multer.diskStorage({
     );
   }
 });
+
+// Function to delete the image and here value is the path of image that is going to be deleted.
+const deleteFile = imagePath => {
+  // Converting it acc. to windows.
+  imagePath = imagePath.replace(/[/]/, "\\");
+  // Retrieving current directory path
+  let direct = __dirname;
+  // changing to get the new path
+  direct = direct.substr(0, direct.length - 6);
+  // Deleting the old file
+  fs.unlinkSync(direct + "public\\" + imagePath);
+};
 
 // Init upload to upload the image
 const upload = multer({
@@ -42,10 +55,12 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
       let description = req.body.description;
       let authorId = req.user._id;
       let authorName = req.user.username;
+      let price = req.body.price;
       let newCamp = {
         name: campName,
         image: newUrl,
         description,
+        price,
         author: {
           id: authorId,
           username: authorName
@@ -93,25 +108,34 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
 });
 
 // To Update the details of camp
-router.put("/:id", middleware.checkCampgroundOwnership, (req, res) => {
-  // Retrieving new camp data from form.
+router.put("/:id", middleware.checkCampgroundOwnership, upload, (req, res) => {
   let campName = req.body.name;
-  let imageUrl = req.body.image;
   let description = req.body.description;
   let authorId = req.user._id;
   let authorName = req.user.username;
+  let price = req.body.price;
+  let newUrl;
+  if (req.file) {
+    deleteFile(req.body.hidden);
+    // Retrieving new camp data from form.
+    newUrl = `uploads/${req.file.filename}`;
+  } else {
+    newUrl = req.body.hidden;
+  }
   let newCamp = {
     name: campName,
-    image: imageUrl,
+    image: newUrl,
     description,
+    price,
     author: {
       id: authorId,
       username: authorName
     }
   };
+
+  // To update the camp
   Campground.findByIdAndUpdate(req.params.id, newCamp)
     .then(camp => {
-      console.log(camp);
       res.redirect("/campgrounds/" + req.params.id);
     })
     .catch(err => console.log(err));
@@ -128,6 +152,7 @@ router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
       });
       Campground.deleteOne(camp)
         .then(() => {
+          deleteFile(req.body.hidden);
           console.log("Camp deleted successfully");
           res.redirect("/campgrounds");
         })

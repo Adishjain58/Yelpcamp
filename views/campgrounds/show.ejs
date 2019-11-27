@@ -37,7 +37,7 @@ dateCalculator = function (comment) {
                     <img class="img-fluid" src="<%= "../"+camp.image %>" alt="" />
                     <div class="figure-caption px-2 py-2 d-flex justify-content-between">
                         <h4><a href="#"><%= camp.name %></a></h4>
-                        <h4 class="justify-content-end">$9.00/night</h4>
+                        <h4 class="justify-content-end">$<%=camp.price%>/night</h4>
                     </div>
                     <p class="px-2"><%= camp.description %></p>
                     <p class="px-2"><em>Submitted By <%=camp.author.username%></em></p>
@@ -46,6 +46,7 @@ dateCalculator = function (comment) {
                     <div class="d-flex">
                         <a href="/campgrounds/<%=camp._id%>/edit" class="btn btn-outline-warning m-3">Edit Camp</a>
                         <form action="/campgrounds/<%=camp._id%>?_method=DELETE" method="post">
+                            <input type="hidden" name="hidden" value="<%=camp.image%>">
                             <button type="submit" class="btn btn-outline-danger mt-3">
                                 Delete Camp
                             </button>
