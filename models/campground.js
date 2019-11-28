@@ -18,7 +18,15 @@ const campgroundSchema = mongoose.Schema({
       ref: "user"
     },
     username: String
-  }
+  },
+  likes: [
+    {
+      author: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User"
+      }
+    }
+  ]
 });
 
 module.exports = Campground = mongoose.model("Campground", campgroundSchema);

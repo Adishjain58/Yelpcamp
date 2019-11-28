@@ -161,4 +161,61 @@ router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
     .catch(err => console.log(err));
 });
 
+// To like the post
+router.post("/:id/like", middleware.isLoggedIn, (req, res) => {
+  Campground.findById(req.params.id)
+    .then(camp => {
+      if (
+        camp.likes.filter(like => like.author.equals(req.user.id)).length > 0
+      ) {
+        req.flash("error", "You have already liked this camp");
+        res.redirect("/campgrounds/" + req.params.id);
+      } else {
+        camp.likes.push({ author: req.user.id });
+        camp
+          .save()
+          .then(() => {
+            req.flash("success", "Campground is liked successfully");
+            res.redirect("/campgrounds/" + req.params.id);
+          })
+          .catch(() => {
+            req.flash("error", "Campground not found");
+            res.redirect("/campgrounds");
+          });
+      }
+    })
+    .catch(() => {
+      req.flash("error", "Campground1 not found");
+      res.redirect("/campgrounds");
+    });
+});
+
+// To unlike the post
+router.post("/:id/unlike", middleware.isLoggedIn, (req, res) => {
+  Campground.findById(req.params.id).then(camp => {
+    if (
+      camp.likes.filter(like => like.author.equals(req.user.id)).length == 0
+    ) {
+      req.flash("error", "You haven't liked the post, so you can't unlike it");
+      res.redirect("/campgrounds/" + req.params.id);
+    } else {
+      const removeIndex = camp.likes
+        .map(like => like.author.toString())
+        .indexOf(req.user.id);
+      camp.likes.splice(removeIndex, 1);
+
+      camp
+        .save()
+        .then(() => {
+          req.flash("success", "Campground is unliked successfully");
+          res.redirect("/campgrounds/" + req.params.id);
+        })
+        .catch(() => {
+          req.flash("error", "Campground not found");
+          res.redirect("/campgrounds");
+        });
+    }
+  });
+});
+
 module.exports = router;

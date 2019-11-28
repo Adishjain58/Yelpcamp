@@ -12,7 +12,31 @@ dateCalculator = function (comment) {
         var res = dateFinder(comment, 86400000) >= 1 ? dateFinder(comment, 86400000) + days : dateFinder(comment, 3600000) >= 1 ? dateFinder(comment, 3600000) + hours : dateFinder(comment, 60000) >= 1 ? dateFinder(comment, 60000) + minutes : dateFinder(comment, 1000) + seconds;
         return res;
     }
-   
+
+    likeFinder=function(likes){
+        if(currentUser){
+        for(var i=0;i<likes.length;i++){ 
+            if(likes[i].author.equals(currentUser.id))
+            { 
+                return "btn-primary" ; 
+            }
+        }
+    }
+        return "btn-outline-primary" ;
+        
+    }
+
+    unlikeFinder=function(likes){
+        if(currentUser){
+        for(var i=0;i<likes.length;i++){ 
+            if(likes[i].author.equals(currentUser.id))
+            { 
+                return "btn-outline-primary" ; 
+            } 
+        }
+    }
+        return "btn-outline-primary" ;
+    }
 %>
 
 <script type="text/JavaScript">
@@ -21,7 +45,7 @@ dateCalculator = function (comment) {
         }
     </script>
 
-<body onLoad="JavaScript:timeRefresh(5000);">
+<body onLoad="JavaScript:timeRefresh(10000);">
     <div class="container">
         <div class="row">
             <div class="col-sm-3 mb-3">
@@ -41,6 +65,18 @@ dateCalculator = function (comment) {
                     </div>
                     <p class="px-2"><%= camp.description %></p>
                     <p class="px-2"><em>Submitted By <%=camp.author.username%></em></p>
+
+                    <div class="d-flex my-3">
+                        <form action="/campgrounds/<%=camp._id%>/like" method="post" class="mx-3">
+                            <button class="btn <%=likeFinder(camp.likes)%>" type="submit"><i
+                                    class="fa fa-thumbs-up"></i></button>
+                        </form>
+                        <h3 class="text-muted"><%=camp.likes.length%></h3>
+                        <form action="/campgrounds/<%=camp._id%>/unlike" method="post" class="mx-3">
+                            <button class="btn <%=unlikeFinder(camp.likes)%>" type="submit"><i
+                                    class="fa fa-thumbs-down"></i></button>
+                        </form>
+                    </div>
                     <% if(currentUser && camp.author.id.equals(currentUser._id)){ %>
 
                     <div class="d-flex">
