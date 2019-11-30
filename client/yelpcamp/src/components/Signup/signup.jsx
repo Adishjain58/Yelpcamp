@@ -3,12 +3,13 @@ import { TextField, Container, Button } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import axios from "axios";
 
-export default class login extends Component {
+export default class signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      error: ""
     };
   }
 
@@ -21,19 +22,27 @@ export default class login extends Component {
   handleSubmit = e => {
     e.preventDefault();
     axios
-      .post("/login", this.state)
-      .then(user => {
-        localStorage.setItem("user", JSON.stringify(user));
-        this.props.history.push("/");
-      })
-      .catch(err => console.log(err));
+      .post("/register", this.state)
+      .then(user => console.log(user))
+      .catch(err => {
+        this.setState({
+          error: err.response.data.error.exists
+        });
+      });
   };
 
   render() {
     return (
       <Fragment>
         <Container maxWidth="sm" className="mt-5">
-          <h1 className="text-center">Login Page</h1>
+          <Fragment>
+            {this.state.error && (
+              <div class="alert alert-danger" role="alert">
+                {this.state.error}
+              </div>
+            )}
+          </Fragment>
+          <h1 className="text-center">Signup Page</h1>
           <form action="" onSubmit={this.handleSubmit}>
             <TextField
               className="mt-5 mb-4"

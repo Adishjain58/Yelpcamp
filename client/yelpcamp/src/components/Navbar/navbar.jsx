@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -16,16 +16,15 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     flexGrow: 1
+  },
+  btnStyle: {
+    textcolor: "rgba(0, 0, 0, 0.5)",
+    textDecoration: "none"
   }
 }));
 
-const styles = {
-  textcolor: "rgba(0, 0, 0, 0.5)",
-  textDecoration: "none"
-};
-export default function Navbar() {
+export default function Navbar({ user, logout }) {
   const classes = useStyles();
-
   return (
     <div className={classes.root}>
       <AppBar
@@ -36,21 +35,27 @@ export default function Navbar() {
           <Typography variant="h6" className={classes.title}>
             Yelpcamp
           </Typography>
-          <Button className={styles}>
-            <Link to="/login" style={{ textDecoration: "none" }}>
-              Login
-            </Link>
-          </Button>
-          <Button className={styles}>
-            <Link to="/signup" style={{ textDecoration: "none" }}>
-              Signup
-            </Link>
-          </Button>
-          <Button className={styles}>
-            <Link to="/campground/new" style={{ textDecoration: "none" }}>
-              Camp
-            </Link>
-          </Button>
+          {!user.hasOwnProperty("username") && (
+            <Fragment>
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                <Button className={classes.btnStyle}>Login</Button>
+              </Link>
+              <Link to="/signup" style={{ textDecoration: "none" }}>
+                <Button className={classes.btnStyle}>Signup</Button>
+              </Link>
+            </Fragment>
+          )}
+          {user.hasOwnProperty("username") && (
+            <Fragment>
+              <Button className={classes.btnStyle}>
+                Welcome {user.username}
+              </Button>
+
+              <Button className={classes.btnStyle} onClick={logout}>
+                Logout
+              </Button>
+            </Fragment>
+          )}
         </Toolbar>
       </AppBar>
     </div>

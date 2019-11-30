@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { withRouter, BrowserRouter } from "react-router-dom";
+import { withRouter, BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
 const Main = withRouter(props => {
-  return <App />;
+  return <App {...props} />;
 });
 
 ReactDOM.render(
-  <BrowserRouter>
+  <Router>
     <Main />
-  </BrowserRouter>,
+  </Router>,
   document.getElementById("root")
 );
 
