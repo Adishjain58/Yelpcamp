@@ -11,13 +11,13 @@ class show extends Component {
     };
   }
 
-  UNSAFE_componentWillMount = props => {
+  componentDidMount = props => {
     axios
       .get(`/campgrounds/${this.props.match.params.id}`)
       .then(camp => {
         this.setState({
           camp: camp.data,
-          likes: camp.data.likes.length
+          likes: camp.data.likes
         });
       })
       .catch(err => console.log(err));
@@ -67,7 +67,7 @@ class show extends Component {
                       <i className="fa fa-thumbs-up"></i>
                     </button>
 
-                    <h3 className="text-muted">{this.state.likes}</h3>
+                    <h3 className="text-muted">{this.state.likes.length}</h3>
 
                     <button
                       className="btn <%=unlikeFinder(camp.likes)%>"
