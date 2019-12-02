@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   btnStyle: {
-    textcolor: "rgba(0, 0, 0, 0.5)",
+    color: "rgba(0, 0, 0, 0.5)",
     textDecoration: "none"
   }
 }));
@@ -33,8 +33,18 @@ export default function Navbar({ user, logout }) {
       >
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Yelpcamp
+            <Link to="/" style={{ textDecoration: "none" }}>
+              Yelpcamp
+            </Link>
+            <Link
+              to="/campgrounds"
+              style={{ textDecoration: "none" }}
+              className={`ml-3 ${classes.btnStyle}`}
+            >
+              Campgrounds
+            </Link>
           </Typography>
+
           {!user.hasOwnProperty("username") && (
             <Fragment>
               <Link to="/login" style={{ textDecoration: "none" }}>

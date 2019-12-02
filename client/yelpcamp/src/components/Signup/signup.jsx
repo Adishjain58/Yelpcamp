@@ -46,7 +46,6 @@ export default class signup extends Component {
           <form action="" onSubmit={this.handleSubmit}>
             <TextField
               className="mt-5 mb-4"
-              id="outlined-basic"
               label="Enter Username"
               variant="outlined"
               name="username"
@@ -57,7 +56,6 @@ export default class signup extends Component {
             <TextField
               type="password"
               className=" mb-4"
-              id="outlined-basic"
               label="Enter Password"
               variant="outlined"
               name="password"

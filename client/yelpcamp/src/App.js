@@ -9,25 +9,10 @@ import Show from "./components/Campgrounds/show";
 import Signup from "./components/Signup/signup";
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: {}
-    };
-  }
-
-  componentWillMount = () => {
-    if (localStorage.getItem("user")) {
-      this.setState({
-        user: JSON.parse(localStorage.getItem("user")).data
-      });
-    }
-  };
-
   render() {
     return (
       <Router>
-        <Route render={props => <Styles auth={this.state.user} {...props} />} />
+        <Route path={/[^/]/} render={props => <Styles {...props} />} />
         <Route exact path="/" component={Landing} />
         <Route exact path="/campgrounds/new" component={CampGround} />
         <Route exact path="/campgrounds" component={Campgrounds} />

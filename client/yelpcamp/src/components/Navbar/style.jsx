@@ -10,10 +10,18 @@ export default class style extends Component {
     };
   }
 
-  UNSAFE_componentWillMount = () => {
-    if (this.props.auth) {
+  UNSAFE_componentWillReceiveProps = () => {
+    if (localStorage.getItem("user")) {
       this.setState({
-        user: this.props.auth
+        user: JSON.parse(localStorage.getItem("user"))
+      });
+    }
+  };
+
+  componentDidMount = () => {
+    if (localStorage.getItem("user")) {
+      this.setState({
+        user: JSON.parse(localStorage.getItem("user"))
       });
     }
   };

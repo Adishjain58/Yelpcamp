@@ -34,11 +34,20 @@ const upload = multer({
   storage: storage
 }).single("image");
 
+// // Index- show all campgrounds
+// router.get("/", (req, res) => {
+//   // Get all campgrounds and render.
+//   Campground.find({})
+//     .then(campgrounds => res.render("campgrounds/index", { campgrounds }))
+//     .catch(err => console.log(err));
+//   // res.render("campgrounds", { campgrounds });
+// });
+
 // Index- show all campgrounds
 router.get("/", (req, res) => {
   // Get all campgrounds and render.
   Campground.find({})
-    .then(campgrounds => res.render("campgrounds/index", { campgrounds }))
+    .then(campgrounds => res.json(campgrounds))
     .catch(err => console.log(err));
   // res.render("campgrounds", { campgrounds });
 });
@@ -84,6 +93,20 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
   res.render("campgrounds/new");
 });
 
+// // SHOW -  To show details of a single campground.
+// router.get("/:id", (req, res) => {
+//   let campId = req.params.id;
+//   // Find the campground to show it's details.
+//   Campground.findById(campId)
+//     .populate("comments")
+//     .exec()
+//     .then(camp => {
+//       res.render("campgrounds/show", { camp });
+//     })
+//     .catch(err => console.log(err));
+//   // render the show template.
+// });
+
 // SHOW -  To show details of a single campground.
 router.get("/:id", (req, res) => {
   let campId = req.params.id;
@@ -92,7 +115,7 @@ router.get("/:id", (req, res) => {
     .populate("comments")
     .exec()
     .then(camp => {
-      res.render("campgrounds/show", { camp });
+      res.json(camp);
     })
     .catch(err => console.log(err));
   // render the show template.

@@ -17,20 +17,36 @@ router.get("/register", (req, res) => {
   res.render("register");
 });
 
+// // To register user
+// router.post("/register", (req, res) => {
+//   const newUser = new User({ username: req.body.username });
+//   User.register(newUser, req.body.password)
+//     .then(user => {
+//       passport.authenticate("local")(req, res, () => {
+//         req.flash("success", "Welcome to yelpcamp " + user.username);
+//         res.redirect("/campgrounds");
+//       });
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       req.flash("error", err.message);
+//       res.redirect("/register");
+//     });
+// });
+
 // To register user
 router.post("/register", (req, res) => {
+  let error = {};
   const newUser = new User({ username: req.body.username });
   User.register(newUser, req.body.password)
     .then(user => {
       passport.authenticate("local")(req, res, () => {
-        req.flash("success", "Welcome to yelpcamp " + user.username);
-        res.redirect("/campgrounds");
+        res.json(user);
       });
     })
     .catch(err => {
-      console.log(err);
-      req.flash("error", err.message);
-      res.redirect("/register");
+      error.exists = "User Already exists";
+      res.status(400).json({ error });
     });
 });
 
@@ -39,15 +55,22 @@ router.get("/login", (req, res) => {
   res.render("login");
 });
 
+// // Handling login logic
+// router.post(
+//   "/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/campgrounds",
+//     failureRedirect: "/login"
+//   }),
+//   (req, res) => {}
+// );
+
 // Handling login logic
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/campgrounds",
-    failureRedirect: "/login"
-  }),
-  (req, res) => {}
-);
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  User.findOne({ username: req.body.username })
+    .then(user => res.json(user))
+    .catch(err => res.status(404).json({ error: "Not Found" }));
+});
 
 // Logout Route
 router.get("/logout", (req, res) => {

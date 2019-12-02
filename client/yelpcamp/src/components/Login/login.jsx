@@ -23,7 +23,7 @@ export default class login extends Component {
     axios
       .post("/login", this.state)
       .then(user => {
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user.data));
         this.props.history.push("/");
       })
       .catch(err => console.log(err));
@@ -37,7 +37,6 @@ export default class login extends Component {
           <form action="" onSubmit={this.handleSubmit}>
             <TextField
               className="mt-5 mb-4"
-              id="outlined-basic"
               label="Enter Username"
               variant="outlined"
               name="username"
@@ -48,7 +47,6 @@ export default class login extends Component {
             <TextField
               type="password"
               className=" mb-4"
-              id="outlined-basic"
               label="Enter Password"
               variant="outlined"
               name="password"

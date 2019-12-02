@@ -46,9 +46,13 @@ class show extends Component {
                   />
                   <div className="figure-caption px-2 py-2 d-flex justify-content-between">
                     <h4>
-                      <a href="#">{this.state.camp.name}</a>
+                      <Link to={`/campgrounds/${this.state.camp._id}`}>
+                        {this.state.camp.name}
+                      </Link>
                     </h4>
-                    <h4 className="justify-content-end">/night</h4>
+                    <h4 className="justify-content-end">
+                      ${this.state.camp.price}/night
+                    </h4>
                   </div>
                   <p className="px-2">{this.state.camp.description}</p>
                   <p className="px-2">
