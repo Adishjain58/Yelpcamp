@@ -6,8 +6,12 @@ class show extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      authUser: {},
       camp: {},
-      likes: 0
+      likes: 0,
+      liked: false,
+      owner: false,
+      error: {}
     };
   }
 
@@ -15,12 +19,71 @@ class show extends Component {
     axios
       .get(`/campgrounds/${this.props.match.params.id}`)
       .then(camp => {
+        let likes;
+        let owner;
+        let authUser;
+        if (localStorage.getItem("user")) {
+          authUser = JSON.parse(localStorage.getItem("user"));
+          likes = camp.data.likes.filter(
+            val => val.author === authUser._id.toString()
+          ).length;
+          owner =
+            authUser._id.toString() === camp.data.author.id ? true : false;
+          console.log(authUser);
+        }
         this.setState({
           camp: camp.data,
-          likes: camp.data.likes
+          likes: camp.data.likes,
+          liked: likes > 0 ? true : false,
+          owner,
+          authUser
         });
       })
       .catch(err => console.log(err));
+  };
+
+  handleLike = () => {
+    if (this.state.authUser) {
+      axios
+        .post(`/campgrounds/${this.props.match.params.id}/like`)
+        .then(camp => {
+          let likes = camp.data.likes.filter(
+            val => val.author === this.state.authUser._id.toString()
+          ).length;
+          this.setState({
+            likes: camp.data.likes,
+            liked: likes > 0 ? true : false
+          });
+        })
+        .catch(err => console.log(err));
+    } else {
+      let error = { err: "You need to be logged in to do that" };
+      this.setState({
+        error
+      });
+    }
+  };
+
+  handleUnlike = () => {
+    if (this.state.authUser) {
+      axios
+        .post(`/campgrounds/${this.props.match.params.id}/unlike`)
+        .then(camp => {
+          let likes = camp.data.likes.filter(
+            val => val.author === this.state.authUser._id.toString()
+          ).length;
+          this.setState({
+            likes: camp.data.likes,
+            liked: likes > 0 ? true : false
+          });
+        })
+        .catch(err => console.log(err));
+    } else {
+      let error = { err: "You need to be logged in to do that" };
+      this.setState({
+        error
+      });
+    }
   };
 
   render() {
@@ -28,6 +91,11 @@ class show extends Component {
       <Fragment>
         {this.state.camp.author && (
           <div className="container mt-5">
+            {this.state.error.hasOwnProperty("err") && (
+              <div class="alert alert-danger" role="alert">
+                {this.state.error.err}
+              </div>
+            )}
             <div className="row">
               <div className="col-sm-3 mb-3">
                 <p className="lead">Yelp Camp</p>
@@ -41,7 +109,7 @@ class show extends Component {
                 <div className="img-thumbnail mb-3">
                   <img
                     className="img-fluid"
-                    src={this.state.camp.image}
+                    src={`../${this.state.camp.image}`}
                     alt=""
                   />
                   <div className="figure-caption px-2 py-2 d-flex justify-content-between">
@@ -59,57 +127,72 @@ class show extends Component {
                     <em>Submitted By {this.state.camp.author.username}</em>
                   </p>
 
-                  <div className="d-flex my-3">
+                  <div className="d-flex my-3 mx-2">
                     <button
-                      className="btn <%=likeFinder(camp.likes)%>"
+                      className={`btn ${
+                        this.state.liked ? "btn-primary" : "btn-outline-primary"
+                      }`}
                       type="submit"
+                      onClick={
+                        this.state.liked ? this.handleUnlike : this.handleLike
+                      }
                     >
-                      <i className="fa fa-thumbs-up"></i>
+                      {this.state.liked ? (
+                        <i className="fa fa-thumbs-down"></i>
+                      ) : (
+                        <i className="fa fa-thumbs-up"></i>
+                      )}
                     </button>
 
-                    <h3 className="text-muted">{this.state.likes.length}</h3>
+                    <h3 className="text-muted">
+                      &nbsp;{this.state.likes.length}
+                    </h3>
 
-                    <button
+                    {/* <button
                       className="btn <%=unlikeFinder(camp.likes)%>"
                       type="submit"
                     >
                       <i className="fa fa-thumbs-down"></i>
-                    </button>
+                    </button> */}
                   </div>
 
-                  <div className="d-flex">
-                    <Link
-                      to={`/campgrounds/${this.state.camp._id}/edit`}
-                      className="btn btn-outline-warning m-3"
-                    >
-                      Edit Camp
-                    </Link>
-                    <form
-                      //   action={`/campgrounds/${this.state.camp._id}?_method=DELETE`}
-                      method="post"
-                    >
-                      <input
-                        type="hidden"
-                        name="hidden"
-                        value={this.state.camp.image}
-                      />
-                      <button
-                        type="submit"
-                        className="btn btn-outline-danger mt-3"
-                      >
-                        Delete Camp
-                      </button>
-                    </form>
-                  </div>
-                  <div className="jumbotron">
-                    <div className="text-right">
+                  {this.state.owner && (
+                    <div className="d-flex">
                       <Link
-                        className="btn btn-outline-success ml-3"
-                        to={`/campgrounds/${this.state.camp._id}/comments/new`}
+                        to={`/campgrounds/${this.state.camp._id}/edit`}
+                        className="btn btn-outline-warning m-3"
                       >
-                        <i className="fa fa-paper-plane"></i> Add new Comment
+                        Edit Camp
                       </Link>
+                      <form
+                        //   action={`/campgrounds/${this.state.camp._id}?_method=DELETE`}
+                        method="post"
+                      >
+                        <input
+                          type="hidden"
+                          name="hidden"
+                          value={this.state.camp.image}
+                        />
+                        <button
+                          type="submit"
+                          className="btn btn-outline-danger mt-3"
+                        >
+                          Delete Camp
+                        </button>
+                      </form>
                     </div>
+                  )}
+                  <div className="jumbotron">
+                    {this.state.authUser && (
+                      <div className="text-right">
+                        <Link
+                          className="btn btn-outline-success ml-3"
+                          to={`/campgrounds/${this.state.camp._id}/comments/new`}
+                        >
+                          <i className="fa fa-paper-plane"></i> Add new Comment
+                        </Link>
+                      </div>
+                    )}
                     <hr />
                     <div className="row">
                       {this.state.camp.comments.map((comment, index) => {
@@ -121,25 +204,30 @@ class show extends Component {
                             </div>
                             <p>{comment.text}</p>
 
-                            <div className="d-flex">
-                              <Link
-                                to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
-                                className="btn btn-outline-warning m-3 btn-sm"
-                              >
-                                Edit Comment
-                              </Link>
-                              <form
-                                action="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>?_method=DELETE"
-                                method="post"
-                              >
-                                <button
-                                  type="submit"
-                                  className="btn btn-sm btn-outline-danger mt-3"
-                                >
-                                  Delete Comment
-                                </button>
-                              </form>
-                            </div>
+                            {this.state.authUser
+                              ? this.state.authUser._id.toString() ===
+                                  comment.author.id && (
+                                  <div className="d-flex">
+                                    <Link
+                                      to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
+                                      className="btn btn-outline-warning m-3 btn-sm"
+                                    >
+                                      Edit Comment
+                                    </Link>
+                                    <form
+                                      action="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>?_method=DELETE"
+                                      method="post"
+                                    >
+                                      <button
+                                        type="submit"
+                                        className="btn btn-sm btn-outline-danger mt-3"
+                                      >
+                                        Delete Comment
+                                      </button>
+                                    </form>
+                                  </div>
+                                )
+                              : ""}
                           </div>
                         );
                       })}

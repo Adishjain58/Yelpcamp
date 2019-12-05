@@ -11,6 +11,36 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
     .catch(err => console.log(err));
 });
 
+// // Route to add a new comment
+// router.post("/", middleware.isLoggedIn, (req, res) => {
+//   // Lookup Campground using id.
+//   Campground.findById(req.params.id)
+//     .then(camp => {
+//       // Create new comment
+//       Comment.create(req.body.comment)
+//         .then(comment => {
+//           // add username and id to comment
+//           comment.author.id = req.user._id;
+//           comment.author.username = req.user.username;
+
+//           // Save the comment
+//           comment.save();
+//           // Connect new comment to campground.
+//           camp.comments.push(comment);
+//           camp
+//             .save()
+//             .then(() => {
+//               req.flash("success", "Successfully added comment");
+//               // Redirect back to show page of campground
+//               res.redirect("/campgrounds/" + camp._id);
+//             })
+//             .catch(err => console.log(err));
+//         })
+//         .catch(err => console.log(err));
+//     })
+//     .catch(err => console.log(err));
+// });
+
 // Route to add a new comment
 router.post("/", middleware.isLoggedIn, (req, res) => {
   // Lookup Campground using id.
@@ -30,9 +60,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
           camp
             .save()
             .then(() => {
-              req.flash("success", "Successfully added comment");
-              // Redirect back to show page of campground
-              res.redirect("/campgrounds/" + camp._id);
+              res.json(camp);
             })
             .catch(err => console.log(err));
         })
@@ -41,11 +69,22 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
     .catch(err => console.log(err));
 });
 
+// // Edit route
+// router.get("/:commentId/edit", middleware.checkCommentOwnership, (req, res) => {
+//   Comment.findById(req.params.commentId)
+//     .then(comment => {
+//       res.render("comments/edit", { comment, campId: req.params.id });
+//     })
+//     .catch(err => {
+//       res.redirect("back");
+//     });
+// });
+
 // Edit route
 router.get("/:commentId/edit", middleware.checkCommentOwnership, (req, res) => {
   Comment.findById(req.params.commentId)
     .then(comment => {
-      res.render("comments/edit", { comment, campId: req.params.id });
+      res.json(comment);
     })
     .catch(err => {
       res.redirect("back");

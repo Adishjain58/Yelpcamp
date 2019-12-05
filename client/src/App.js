@@ -7,6 +7,8 @@ import Landing from "./components/Landing/landing";
 import Campgrounds from "./components/Campgrounds/campgrounds";
 import Show from "./components/Campgrounds/show";
 import Signup from "./components/Signup/signup";
+import Comment from "./components/Comment/commentNew";
+import CommentEdit from "./components/Comment/commentEdit";
 
 class App extends React.Component {
   render() {
@@ -23,6 +25,11 @@ class App extends React.Component {
           path="/campgrounds/:id"
           render={props => <Show {...props} />}
         ></Route>
+        <Route path="/campgrounds/:id/comments/new" component={Comment} />
+        <Route
+          path="/campgrounds/:id/comments/:commentId/edit"
+          component={CommentEdit}
+        />
       </Router>
     );
   }
