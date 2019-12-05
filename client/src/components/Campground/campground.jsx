@@ -14,7 +14,7 @@ export default class campground extends Component {
     this.state = {
       name: "",
       price: "",
-      image: "",
+      file: null,
       description: ""
     };
   }
@@ -27,17 +27,29 @@ export default class campground extends Component {
 
   handleImage = e => {
     this.setState({
-      image: e.target.files[0]
+      file: e.target.files[0]
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
 
-    console.log(this.state);
+    const formData = new FormData();
+    formData.append("myImage", this.state.file);
+    formData.append("name", this.state.name);
+    formData.append("price", this.state.price);
+    formData.append("description", this.state.description);
+    const config = {
+      headers: {
+        "content-type": "multipart/form-data"
+      }
+    };
     axios
-      .post("/campgrounds", this.state)
-      .then(camp => console.log(camp))
+      .post("/campgrounds", formData, config)
+      .then(camp => {
+        this.props.noty.success("Campground created successfully");
+        this.props.history.push(`/campgrounds`);
+      })
       .catch(err => console.log(err));
   };
 
@@ -46,11 +58,7 @@ export default class campground extends Component {
       <Fragment>
         <Container maxWidth="sm" className="mt-5">
           <h1 className="text-center">Create new Camp</h1>
-          <form
-            action=""
-            onSubmit={this.handleSubmit}
-            encType="multipart/form-data"
-          >
+          <form action="" onSubmit={this.handleSubmit}>
             <TextField
               className="mt-5 mb-4"
               id="outlined-basic"
@@ -80,7 +88,7 @@ export default class campground extends Component {
               className=" mb-4"
               id="outlined-basic"
               variant="outlined"
-              name="image"
+              name="myImage"
               onChange={this.handleImage}
               min="0.4"
               fullWidth

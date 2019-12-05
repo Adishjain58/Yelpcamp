@@ -8,8 +8,7 @@ export default class signup extends Component {
     super(props);
     this.state = {
       username: "",
-      password: "",
-      error: ""
+      password: ""
     };
   }
 
@@ -23,11 +22,11 @@ export default class signup extends Component {
     e.preventDefault();
     axios
       .post("/register", this.state)
-      .then(user => console.log(user))
+      .then(user => {
+        this.props.noty.success("Registered Successfully");
+      })
       .catch(err => {
-        this.setState({
-          error: err.response.data.error.exists
-        });
+        this.props.noty.error(err.response.data.error.exists);
       });
   };
 
@@ -35,13 +34,6 @@ export default class signup extends Component {
     return (
       <Fragment>
         <Container maxWidth="sm" className="mt-5">
-          <Fragment>
-            {this.state.error && (
-              <div class="alert alert-danger" role="alert">
-                {this.state.error}
-              </div>
-            )}
-          </Fragment>
           <h1 className="text-center">Signup Page</h1>
           <form action="" onSubmit={this.handleSubmit}>
             <TextField

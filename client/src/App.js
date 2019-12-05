@@ -9,27 +9,52 @@ import Show from "./components/Campgrounds/show";
 import Signup from "./components/Signup/signup";
 import Comment from "./components/Comment/commentNew";
 import CommentEdit from "./components/Comment/commentEdit";
-
+import CampgroundEdit from "./components/Campground/campgroundEdit";
+import notification from "./Services/notifications";
 class App extends React.Component {
   render() {
     return (
       <Router>
-        <Route path={/[^/]/} render={props => <Styles {...props} />} />
+        <Route
+          path={/[^/]/}
+          render={props => <Styles {...props} noty={new notification()} />}
+        />
         <Route exact path="/" component={Landing} />
-        <Route exact path="/campgrounds/new" component={CampGround} />
+        <Route
+          exact
+          path="/campgrounds/new"
+          render={props => <CampGround {...props} noty={new notification()} />}
+        />
         <Route exact path="/campgrounds" component={Campgrounds} />
-        <Route path="/login" component={Login}></Route>
-        <Route path="/signup" component={Signup} />
+        <Route
+          path="/login"
+          render={props => <Login {...props} noty={new notification()} />}
+        ></Route>
+        <Route
+          path="/signup"
+          render={props => <Signup {...props} noty={new notification()} />}
+        />
         <Route
           exact
           path="/campgrounds/:id"
-          render={props => <Show {...props} />}
+          render={props => <Show {...props} noty={new notification()} />}
         ></Route>
-        <Route exact path="/campgrounds/:id/comments/new" component={Comment} />
+        <Route
+          exact
+          path="/campgrounds/:id/edit"
+          render={props => (
+            <CampgroundEdit {...props} noty={new notification()} />
+          )}
+        ></Route>
+        <Route
+          exact
+          path="/campgrounds/:id/comments/new"
+          render={props => <Comment {...props} noty={new notification()} />}
+        />
         <Route
           exact
           path="/campgrounds/:id/comments/:commentId/edit"
-          component={CommentEdit}
+          render={props => <CommentEdit {...props} noty={new notification()} />}
         />
       </Router>
     );

@@ -23,8 +23,8 @@ export default class login extends Component {
     axios
       .post("/login", this.state)
       .then(user => {
-        console.log(user);
         localStorage.setItem("user", JSON.stringify(user.data));
+        this.props.noty.success("Logged in Successfully");
         this.props.history.push("/");
       })
       .catch(err => console.log(err));

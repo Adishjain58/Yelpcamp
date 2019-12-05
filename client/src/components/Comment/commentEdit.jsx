@@ -36,6 +36,7 @@ class commentEdit extends Component {
       comment
     )
       .then(comment => {
+        this.props.noty.success("Comment updated successfully");
         this.props.history.push(`/campgrounds/${this.props.match.params.id}`);
       })
       .catch(err => console.log(err));

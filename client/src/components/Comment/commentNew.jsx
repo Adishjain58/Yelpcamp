@@ -33,7 +33,7 @@ class commentNew extends Component {
     };
     Axios.post(`/campgrounds/${this.state.camp._id}/comments`, comment)
       .then(comment => {
-        console.log(comment);
+        this.props.noty.success("Comment added successfully");
         this.props.history.push(`/campgrounds/${this.state.camp._id}`);
       })
       .catch(err => console.log(err));

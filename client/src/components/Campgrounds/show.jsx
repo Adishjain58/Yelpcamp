@@ -11,7 +11,7 @@ class show extends Component {
       likes: 0,
       liked: false,
       owner: false,
-      error: {}
+      hidden: ""
     };
   }
 
@@ -35,7 +35,8 @@ class show extends Component {
           likes: camp.data.likes,
           liked: likes > 0 ? true : false,
           owner,
-          authUser
+          authUser,
+          hidden: camp.data.image
         });
       })
       .catch(err => console.log(err));
@@ -53,13 +54,11 @@ class show extends Component {
             likes: camp.data.likes,
             liked: likes > 0 ? true : false
           });
+          this.props.noty.success("Camp liked successfully");
         })
         .catch(err => console.log(err));
     } else {
-      let error = { err: "You need to be logged in to do that" };
-      this.setState({
-        error
-      });
+      this.props.noty.error("You need to be logged in to do that");
     }
   };
 
@@ -75,13 +74,11 @@ class show extends Component {
             likes: camp.data.likes,
             liked: likes > 0 ? true : false
           });
+          this.props.noty.success("Camp unliked successfully");
         })
         .catch(err => console.log(err));
     } else {
-      let error = { err: "You need to be logged in to do that" };
-      this.setState({
-        error
-      });
+      this.props.noty.error("You need to be logged in to do that");
     }
   };
 
@@ -92,6 +89,7 @@ class show extends Component {
           `/campgrounds/${this.props.match.params.id}/comments/${commentId}`
         )
         .then(() => {
+          this.props.noty.success("Comment deleted successfully");
           axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
             this.setState({
               camp: camp.data
@@ -100,11 +98,18 @@ class show extends Component {
         })
         .catch(err => console.log(err));
     } else {
-      let error = { err: "You need to be logged in to do that" };
-      this.setState({
-        error
-      });
+      this.props.noty.error("You need to be logged in to do that");
     }
+  };
+
+  deleteCamp = campId => {
+    axios
+      .delete(`/campgrounds/${campId}`)
+      .then(() => {
+        this.props.noty.success("Campground deleted successfully");
+        this.props.history.push("/campgrounds");
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -112,11 +117,6 @@ class show extends Component {
       <Fragment>
         {this.state.camp.author && (
           <div className="container mt-5">
-            {this.state.error.hasOwnProperty("err") && (
-              <div class="alert alert-danger" role="alert">
-                {this.state.error.err}
-              </div>
-            )}
             <div className="row">
               <div className="col-sm-3 mb-3">
                 <p className="lead">Yelp Camp</p>
@@ -177,22 +177,20 @@ class show extends Component {
                       >
                         Edit Camp
                       </Link>
-                      <form
-                        //   action={`/campgrounds/${this.state.camp._id}?_method=DELETE`}
-                        method="post"
+
+                      <input
+                        type="hidden"
+                        name="hidden"
+                        value={this.state.camp.image}
+                      />
+
+                      <button
+                        className="btn btn-outline-danger mt-3"
+                        style={{ height: "38px" }}
+                        onClick={() => this.deleteCamp(this.state.camp._id)}
                       >
-                        <input
-                          type="hidden"
-                          name="hidden"
-                          value={this.state.camp.image}
-                        />
-                        <button
-                          type="submit"
-                          className="btn btn-outline-danger mt-3"
-                        >
-                          Delete Camp
-                        </button>
-                      </form>
+                        Delete Camp
+                      </button>
                     </div>
                   )}
                   <div className="jumbotron">

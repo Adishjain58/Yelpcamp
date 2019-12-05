@@ -32,6 +32,7 @@ export default class style extends Component {
       this.setState({
         user: {}
       });
+      this.props.noty.success("Logged out successfully");
       this.props.history.push("/");
     });
   };
