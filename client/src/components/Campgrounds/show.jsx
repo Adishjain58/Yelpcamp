@@ -29,7 +29,6 @@ class show extends Component {
           ).length;
           owner =
             authUser._id.toString() === camp.data.author.id ? true : false;
-          console.log(authUser);
         }
         this.setState({
           camp: camp.data,
@@ -75,6 +74,28 @@ class show extends Component {
           this.setState({
             likes: camp.data.likes,
             liked: likes > 0 ? true : false
+          });
+        })
+        .catch(err => console.log(err));
+    } else {
+      let error = { err: "You need to be logged in to do that" };
+      this.setState({
+        error
+      });
+    }
+  };
+
+  deleteComment = commentId => {
+    if (this.state.authUser) {
+      axios
+        .delete(
+          `/campgrounds/${this.props.match.params.id}/comments/${commentId}`
+        )
+        .then(() => {
+          axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
+            this.setState({
+              camp: camp.data
+            });
           });
         })
         .catch(err => console.log(err));
@@ -132,7 +153,6 @@ class show extends Component {
                       className={`btn ${
                         this.state.liked ? "btn-primary" : "btn-outline-primary"
                       }`}
-                      type="submit"
                       onClick={
                         this.state.liked ? this.handleUnlike : this.handleLike
                       }
@@ -147,13 +167,6 @@ class show extends Component {
                     <h3 className="text-muted">
                       &nbsp;{this.state.likes.length}
                     </h3>
-
-                    {/* <button
-                      className="btn <%=unlikeFinder(camp.likes)%>"
-                      type="submit"
-                    >
-                      <i className="fa fa-thumbs-down"></i>
-                    </button> */}
                   </div>
 
                   {this.state.owner && (
@@ -210,21 +223,21 @@ class show extends Component {
                                   <div className="d-flex">
                                     <Link
                                       to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
-                                      className="btn btn-outline-warning m-3 btn-sm"
                                     >
-                                      Edit Comment
-                                    </Link>
-                                    <form
-                                      action="/campgrounds/<%=camp._id%>/comments/<%=comment._id%>?_method=DELETE"
-                                      method="post"
-                                    >
-                                      <button
-                                        type="submit"
-                                        className="btn btn-sm btn-outline-danger mt-3"
-                                      >
-                                        Delete Comment
+                                      <button className="btn btn-outline-warning m-3 btn-sm">
+                                        Edit Comment
                                       </button>
-                                    </form>
+                                    </Link>
+
+                                    <button
+                                      className="btn btn-sm btn-outline-danger mt-3"
+                                      style={{ height: "33px" }}
+                                      onClick={() =>
+                                        this.deleteComment(comment._id)
+                                      }
+                                    >
+                                      Delete Comment
+                                    </button>
                                   </div>
                                 )
                               : ""}

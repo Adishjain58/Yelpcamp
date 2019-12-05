@@ -29,11 +29,6 @@ const deleteFile = imagePath => {
   fs.unlinkSync(direct + "public\\" + imagePath);
 };
 
-// Init upload to upload the image
-const upload = multer({
-  storage: storage
-}).single("image");
-
 // // Index- show all campgrounds
 // router.get("/", (req, res) => {
 //   // Get all campgrounds and render.
@@ -52,40 +47,50 @@ router.get("/", (req, res) => {
   // res.render("campgrounds", { campgrounds });
 });
 
-// Create- add new campground to databse
-router.post("/", middleware.isLoggedIn, (req, res) => {
-  upload(req, res, err => {
-    if (err) {
-      res.render("/campgrounds/new");
-    } else {
-      // Retrieving new camp data from form.
-      let campName = req.body.name;
-      let newUrl = `uploads/${req.file.filename}`;
-      let description = req.body.description;
-      let authorId = req.user._id;
-      let authorName = req.user.username;
-      let price = req.body.price;
-      let newCamp = {
-        name: campName,
-        image: newUrl,
-        description,
-        price,
-        author: {
-          id: authorId,
-          username: authorName
-        }
-      };
+// // Create- add new campground to databse
+// router.post("/", middleware.isLoggedIn, (req, res) => {
+//   upload(req, res, err => {
+//     if (err) {
+//       res.render("/campgrounds/new");
+//     } else {
+//       // Retrieving new camp data from form.
+//       let campName = req.body.name;
+//       let newUrl = `uploads/${req.file.filename}`;
+//       let description = req.body.description;
+//       let authorId = req.user._id;
+//       let authorName = req.user.username;
+//       let price = req.body.price;
+//       let newCamp = {
+//         name: campName,
+//         image: newUrl,
+//         description,
+//         price,
+//         author: {
+//           id: authorId,
+//           username: authorName
+//         }
+//       };
 
-      // Create a new campground and save in db.
-      Campground.create(newCamp)
-        .then(camp => {
-          req.flash("success", "Campground created successfully");
-          res.redirect("/campgrounds");
-        })
-        .catch(err => console.log(err));
-      // Redirecting to campgrounds page
-    }
-  });
+//       // Create a new campground and save in db.
+//       Campground.create(newCamp)
+//         .then(camp => {
+//           req.flash("success", "Campground created successfully");
+//           res.redirect("/campgrounds");
+//         })
+//         .catch(err => console.log(err));
+//       // Redirecting to campgrounds page
+//     }
+//   });
+// });
+
+// Create- add new campground to databse
+router.post("/", (req, res) => {
+  // Init upload to upload the image
+  const upload = multer({
+    storage: storage
+  }).single(req.body.image);
+  // console.log(req.file.fieldname);
+  console.log(req.body.image);
 });
 
 // NEW - show form to create a campground.
@@ -131,7 +136,7 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
 });
 
 // To Update the details of camp
-router.put("/:id", middleware.checkCampgroundOwnership, upload, (req, res) => {
+router.put("/:id", middleware.checkCampgroundOwnership, (req, res) => {
   let campName = req.body.name;
   let description = req.body.description;
   let authorId = req.user._id;

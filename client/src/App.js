@@ -25,8 +25,9 @@ class App extends React.Component {
           path="/campgrounds/:id"
           render={props => <Show {...props} />}
         ></Route>
-        <Route path="/campgrounds/:id/comments/new" component={Comment} />
+        <Route exact path="/campgrounds/:id/comments/new" component={Comment} />
         <Route
+          exact
           path="/campgrounds/:id/comments/:commentId/edit"
           component={CommentEdit}
         />

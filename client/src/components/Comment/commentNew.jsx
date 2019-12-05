@@ -7,9 +7,7 @@ class commentNew extends Component {
     super(props);
     this.state = {
       camp: {},
-      comment: {
-        text: ""
-      }
+      text: ""
     };
   }
 
@@ -24,21 +22,25 @@ class commentNew extends Component {
 
   handleChange = e => {
     this.setState({
-      comment: {
-        text: e.target.value
-      }
+      text: e.target.value
     });
   };
 
-  handleSubmit = () => {
-    Axios.post(`/campgrounds/${this.state.camp._id}/comments`)
+  handleSubmit = e => {
+    e.preventDefault();
+    const comment = {
+      text: this.state.text
+    };
+    Axios.post(`/campgrounds/${this.state.camp._id}/comments`, comment)
       .then(comment => {
-        this.props.location.history.push(`/campgrounds/${this.state.camp._id}`);
+        console.log(comment);
+        this.props.history.push(`/campgrounds/${this.state.camp._id}`);
       })
       .catch(err => console.log(err));
   };
 
   render() {
+    console.log(this.props);
     return (
       <div className="container">
         <div className="row">
@@ -46,27 +48,25 @@ class commentNew extends Component {
             ADD new Comment to {this.state.camp.name}
           </h1>
           <div style={{ width: "30%", margin: "20px auto" }}>
-            <form
-              className="col-12"
-              action={`/campgrounds/${this.state.camp._id}/comments`}
-              method="post"
-              onSubmit={this.handleSubmit}
-            >
+            <form className="col-12" onSubmit={this.handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Enter Text for comment</label>
                 <input
                   type="text"
-                  name="comment[text]"
+                  name="text"
                   id="name"
                   className="form-control"
                   placeholder="Text"
                   onChange={this.handleChange}
-                  value={this.state.comment.text}
+                  value={this.state.text}
                   required
                 />
               </div>
               <div className="form-group">
-                <button className="btn btn-outline-primary btn-block">
+                <button
+                  type="submit"
+                  className="btn btn-outline-primary btn-block"
+                >
                   <i className="fa fa-paper-plane" /> Submit
                 </button>
               </div>

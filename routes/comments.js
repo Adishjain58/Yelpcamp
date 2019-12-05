@@ -47,7 +47,11 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
   Campground.findById(req.params.id)
     .then(camp => {
       // Create new comment
-      Comment.create(req.body.comment)
+      const comment = {
+        text: req.body.text
+      };
+      console.log(comment);
+      Comment.create(comment)
         .then(comment => {
           // add username and id to comment
           comment.author.id = req.user._id;
@@ -91,29 +95,54 @@ router.get("/:commentId/edit", middleware.checkCommentOwnership, (req, res) => {
     });
 });
 
+// // Update Route
+// router.put("/:commentId", middleware.checkCommentOwnership, (req, res) => {
+//   Comment.findByIdAndUpdate(req.params.commentId, req.body.comment)
+//     .then(() => {
+//       req.flash("success", "Comment updated successfully");
+//       res.redirect("/campgrounds/" + req.params.id);
+//     })
+//     .catch(err => {
+//       res.redirect("back");
+//     });
+// });
+
 // Update Route
 router.put("/:commentId", middleware.checkCommentOwnership, (req, res) => {
-  Comment.findByIdAndUpdate(req.params.commentId, req.body.comment)
-    .then(() => {
-      req.flash("success", "Comment updated successfully");
-      res.redirect("/campgrounds/" + req.params.id);
+  const comment = {
+    text: req.body.text
+  };
+  Comment.findByIdAndUpdate(req.params.commentId, comment)
+    .then(comment => {
+      res.json(comment);
     })
     .catch(err => {
       res.redirect("back");
     });
 });
 
+// // Delete Route
+// router.delete("/:commentId", middleware.checkCommentOwnership, (req, res) => {
+//   Comment.findByIdAndDelete(req.params.commentId)
+//     .then(() => {
+//       req.flash("success", "Comment deleted successfully");
+//       console.log("Comment deleted succcessfully");
+//       res.redirect("back");
+//     })
+//     .catch(err => {
+//       req.flash("error", "Comment not found");
+//       res.redirect("back");
+//     });
+// });
+
 // Delete Route
 router.delete("/:commentId", middleware.checkCommentOwnership, (req, res) => {
   Comment.findByIdAndDelete(req.params.commentId)
     .then(() => {
-      req.flash("success", "Comment deleted successfully");
-      console.log("Comment deleted succcessfully");
-      res.redirect("back");
+      res.json({ success: "Comment deleted successfully" });
     })
     .catch(err => {
-      req.flash("error", "Comment not found");
-      res.redirect("back");
+      res.status(404).json({ err: "Comment not found" });
     });
 });
 

@@ -1,18 +1,44 @@
 import React, { Component } from "react";
 import Axios from "axios";
+import { Link } from "react-router-dom";
 
 class commentEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      comment: {
-        text: ""
-      }
+      text: ""
     };
   }
 
   componentDidMount = () => {
-    Axios.get();
+    Axios.get(
+      `/campgrounds/${this.props.match.params.id}/comments/${this.props.match.params.commentId}/edit`
+    ).then(comment => {
+      this.setState({
+        text: comment.data.text
+      });
+    });
+  };
+
+  handleChange = e => {
+    this.setState({
+      text: e.target.value
+    });
+  };
+
+  editComment = e => {
+    e.preventDefault();
+    const comment = {
+      text: this.state.text
+    };
+    Axios.put(
+      `/campgrounds/${this.props.match.params.id}/comments/${this.props.match.params.commentId}`,
+      comment
+    )
+      .then(comment => {
+        this.props.history.push(`/campgrounds/${this.props.match.params.id}`);
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -22,11 +48,7 @@ class commentEdit extends Component {
         <div className="row">
           <h1 className="col-12 text-center mt-5">Edit Comment</h1>
           <div style={{ width: "30%", margin: "20px auto" }}>
-            <form
-              className="col-12"
-              action="/campgrounds/<%= campId%>/comments/<%=comment._id%>?_method=PUT"
-              method="post"
-            >
+            <form className="col-12" action="" onSubmit={this.editComment}>
               <div className="form-group">
                 <label htmlFor="name">Enter Text for comment</label>
                 <input
@@ -35,16 +57,22 @@ class commentEdit extends Component {
                   id="name"
                   className="form-control"
                   placeholder="Text"
-                  defaultValue="<%=comment.text%>"
+                  defaultValue={this.state.text}
+                  onChange={this.handleChange}
                 />
               </div>
               <div className="form-group">
-                <button className="btn btn-outline-primary btn-block">
+                <button
+                  type="submit"
+                  className="btn btn-outline-primary btn-block"
+                >
                   <i className="fa fa-paper-plane" /> Submit
                 </button>
               </div>
             </form>
-            <a href="/campgrounds/<%= campId%>">Go Back</a>
+            <Link to={`/campgrounds/${this.props.match.params.id}`}>
+              Go Back
+            </Link>
           </div>
         </div>
       </div>
