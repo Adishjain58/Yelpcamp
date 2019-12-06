@@ -43,7 +43,6 @@ class commentEdit extends Component {
   };
 
   render() {
-    console.log(this.props.match);
     return (
       <div className="container">
         <div className="row">
