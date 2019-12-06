@@ -95,7 +95,7 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
     .then(camp => {
       res.json(camp);
     })
-    .catch(err => console.log(err));
+    .catch(err => res.json({ err: "Camp not found" }));
 });
 
 // To Update the details of camp

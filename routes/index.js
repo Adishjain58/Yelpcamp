@@ -18,8 +18,7 @@ router.post("/register", (req, res) => {
       });
     })
     .catch(err => {
-      error.exists = "User Already exists";
-      res.status(400).json({ error });
+      res.status(400).json(err);
     });
 });
 
@@ -27,7 +26,9 @@ router.post("/register", (req, res) => {
 router.post("/login", passport.authenticate("local"), (req, res) => {
   User.findOne({ username: req.body.username })
     .then(user => res.json(user))
-    .catch(err => res.status(404).json({ error: "Not Found" }));
+    .catch(err => {
+      res.status(404).json(err);
+    });
 });
 
 // Logout Route

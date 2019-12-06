@@ -1,21 +1,27 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import spinner from "../../lg.rotating-balls-spinner.gif";
 
 class campgrounds extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      camps: []
+      camps: [],
+      loading: false
     };
   }
 
   componentDidMount = () => {
+    this.setState({
+      loading: true
+    });
     axios
       .get("/campgrounds")
       .then(camps => {
         this.setState({
-          camps: camps.data
+          camps: camps.data,
+          loading: false
         });
       })
       .catch(err => console.log(err));
@@ -61,7 +67,15 @@ class campgrounds extends Component {
             </Link>
           </p>
         </header>
-        {campsData()}
+        <Fragment>
+          {this.state.loading ? (
+            <div className="text-center mt-5">
+              <img src={spinner} alt="" />
+            </div>
+          ) : (
+            campsData()
+          )}
+        </Fragment>
       </div>
     );
   }

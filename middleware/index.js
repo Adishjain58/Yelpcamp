@@ -12,8 +12,7 @@ middlewareObject.checkCommentOwnership = (req, res, next) => {
         if (comment.author.id.equals(req.user._id)) {
           next();
         } else {
-          req.flash("error", "You don't have permission to do that");
-          res.redirect("back");
+          res.status(401).json({ err: "You are not authorized to do that" });
         }
       })
       .catch(() => {
@@ -21,8 +20,7 @@ middlewareObject.checkCommentOwnership = (req, res, next) => {
         res.redirect("back");
       });
   } else {
-    req.flash("error", "You need to be logged in to do that");
-    res.redirect("back");
+    res.status(400).json({ err: "You need to be logged in to do that" });
   }
 };
 
@@ -35,8 +33,7 @@ middlewareObject.checkCampgroundOwnership = (req, res, next) => {
         if (camp.author.id.equals(req.user._id)) {
           next();
         } else {
-          req.flash("error", "You don't have permission to do that");
-          res.redirect("back");
+          res.status(401).json({ err: "You are not authorized to do that" });
         }
       })
       .catch(() => {
@@ -44,8 +41,7 @@ middlewareObject.checkCampgroundOwnership = (req, res, next) => {
         res.redirect("back");
       });
   } else {
-    req.flash("error", "You need to be logged in to do that");
-    res.redirect("/login");
+    res.status(400).json({ err: "You need to be logged in to do that" });
   }
 };
 
@@ -54,8 +50,7 @@ middlewareObject.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  req.flash("error", "You need to be logged in to do that");
-  res.redirect("/login");
+  res.status(400).json({ err: "You need to be logged in to do that" });
 };
 
 module.exports = middlewareObject;
