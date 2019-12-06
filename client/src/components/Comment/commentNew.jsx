@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import spinner from "../../lg.rotating-balls-spinner.gif";
+import { Container, TextField } from "@material-ui/core";
 
 class commentNew extends Component {
   constructor(props) {
@@ -52,45 +53,39 @@ class commentNew extends Component {
 
   render() {
     return (
-      <div className="container">
+      <Fragment>
         {this.state.loading ? (
           <div className="text-center mt-5">
             <img src={spinner} alt="" />
           </div>
         ) : (
-          <div className="row">
+          <Container maxWidth="sm" className="mt-5">
             <h1 className="col-12 text-center mt-5">
               ADD new Comment to {this.state.camp.name}
             </h1>
-            <div style={{ width: "30%", margin: "20px auto" }}>
-              <form className="col-12" onSubmit={this.handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="name">Enter Text for comment</label>
-                  <input
-                    type="text"
-                    name="text"
-                    id="name"
-                    className="form-control"
-                    placeholder="Text"
-                    onChange={this.handleChange}
-                    value={this.state.text}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <button
-                    type="submit"
-                    className="btn btn-outline-primary btn-block"
-                  >
-                    <i className="fa fa-paper-plane" /> Submit
-                  </button>
-                </div>
-              </form>
-              <Link to={`/campgrounds/${this.state.camp._id}`}>Go Back</Link>
-            </div>
-          </div>
+            <form className="col-12" onSubmit={this.handleSubmit}>
+              <TextField
+                className="mt-5 mb-4"
+                id="outlined-basic"
+                label="Enter Text for comment"
+                variant="outlined"
+                name="text"
+                value={this.state.text}
+                onChange={this.handleChange}
+                fullWidth
+                required
+              />
+              <button
+                type="submit"
+                className="btn btn-outline-primary btn-block mb-4"
+              >
+                <i className="fa fa-paper-plane" /> Submit
+              </button>
+            </form>
+            <Link to={`/campgrounds/${this.state.camp._id}`}>Go Back</Link>
+          </Container>
         )}
-      </div>
+      </Fragment>
     );
   }
 }
