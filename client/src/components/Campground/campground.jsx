@@ -33,24 +33,33 @@ export default class campground extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("myImage", this.state.file);
-    formData.append("name", this.state.name);
-    formData.append("price", this.state.price);
-    formData.append("description", this.state.description);
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data"
-      }
-    };
-    axios
-      .post("/campgrounds", formData, config)
-      .then(camp => {
-        this.props.noty.success("Campground created successfully");
-        this.props.history.push(`/campgrounds`);
-      })
-      .catch(err => console.log(err));
+    const ext = this.state.file.name
+      .substring(this.state.file.name.indexOf("."))
+      .toLowerCase();
+    if (ext.match(/(.jpg)|(.jpeg)|(.png)|(gif)/)) {
+      const formData = new FormData();
+      formData.append("myImage", this.state.file);
+      formData.append("name", this.state.name);
+      formData.append("price", this.state.price);
+      formData.append("description", this.state.description);
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data"
+        }
+      };
+      axios
+        .post("/campgrounds", formData, config)
+        .then(camp => {
+          this.props.noty.success("Campground created successfully");
+          this.props.history.push(`/campgrounds`);
+        })
+        .catch(err => {
+          // console.log(err.response.data.message);
+          this.props.noty.error(err.response.data.message);
+        });
+    } else {
+      this.props.noty.error("This is not a supported image format");
+    }
   };
 
   render() {
@@ -85,6 +94,7 @@ export default class campground extends Component {
             />
             <TextField
               type="file"
+              accept="image/*"
               className=" mb-4"
               id="outlined-basic"
               variant="outlined"

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, TextareaAutosize } from "@material-ui/core";
 import Axios from "axios";
 
 class campgroundEdit extends Component {
@@ -57,25 +57,40 @@ class campgroundEdit extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    let ext;
+    if (this.state.file) {
+      ext = this.state.file.name
+        .substring(this.state.file.name.indexOf("."))
+        .toLowerCase();
+    } else {
+      ext = this.state.hidden
+        .substring(this.state.hidden.indexOf("."))
+        .toLowerCase();
+    }
+    if (ext.match(/(.jpg)|(.jpeg)|(.png)|(gif)/)) {
+      const formData = new FormData();
 
-    const formData = new FormData();
-
-    formData.append("myImage", this.state.file);
-    formData.append("hidden", this.state.hidden);
-    formData.append("name", this.state.updatedName);
-    formData.append("price", this.state.price);
-    formData.append("description", this.state.description);
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data"
-      }
-    };
-    Axios.put(`/campgrounds/${this.props.match.params.id}`, formData, config)
-      .then(camp => {
-        this.props.noty.success("Campground updated successfully");
-        this.props.history.push(`/campgrounds`);
-      })
-      .catch(err => console.log(err));
+      formData.append("myImage", this.state.file);
+      formData.append("hidden", this.state.hidden);
+      formData.append("name", this.state.updatedName);
+      formData.append("price", this.state.price);
+      formData.append("description", this.state.description);
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data"
+        }
+      };
+      Axios.put(`/campgrounds/${this.props.match.params.id}`, formData, config)
+        .then(camp => {
+          this.props.noty.success("Campground updated successfully");
+          this.props.history.push(`/campgrounds`);
+        })
+        .catch(err => {
+          this.props.noty.error(err.response.data.message);
+        });
+    } else {
+      this.props.noty.error("This is not a supported image format");
+    }
   };
 
   render() {
@@ -93,45 +108,44 @@ class campgroundEdit extends Component {
                 id="hidden"
                 defaultValue={this.state.hidden}
               />
+
+              <TextField
+                className="mt-5 mb-4"
+                id="outlined-basic"
+                label="Enter Name Of Camp"
+                variant="outlined"
+                name="updatedName"
+                value={this.state.updatedName}
+                onChange={this.handleChange}
+                fullWidth
+                required
+              />
+
+              <TextField
+                type="number"
+                className=" mb-4"
+                id="outlined-basic"
+                label="Enter Price"
+                variant="outlined"
+                name="price"
+                value={this.state.price}
+                onChange={this.handleChange}
+                min="0.4"
+                step="0.1"
+                fullWidth
+                required
+              />
               <div className="form-group">
-                <label htmlFor="name">Enter name of Camp</label>
-                <input
-                  type="text"
-                  name="updatedName"
-                  defaultValue={this.state.updatedName}
-                  id="name"
-                  className="form-control"
-                  placeholder="Name"
-                  onChange={this.handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="price">Enter Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  id="price"
-                  className="form-control"
-                  placeholder="Price"
-                  onChange={this.handleChange}
-                  defaultValue={this.state.price}
-                  step="0.01"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor>
+                <label>
                   <input
                     type="checkbox"
-                    name
+                    name="checkbox"
                     id="check"
                     onChange={this.checkChecked}
                   />{" "}
                   Want to change image?
                 </label>
               </div>
-              <label htmlFor="inputGroupFile01">Select Image</label>
 
               <TextField
                 type="file"
@@ -146,20 +160,17 @@ class campgroundEdit extends Component {
                 fullWidth
               />
 
-              <div className="form-group">
-                <label htmlFor="description">Enter Description</label>
-                <textarea
-                  name="description"
-                  id="description"
-                  onChange={this.handleChange}
-                  placeholder="Enter description"
-                  cols={30}
-                  rows={10}
-                  className="form-control"
-                  required
-                  defaultValue={this.state.description}
-                />
-              </div>
+              <TextareaAutosize
+                className="form-control mb-3"
+                rows="5"
+                rowsMax="6"
+                name="description"
+                label="Enter Description"
+                placeholder="Enter Description"
+                value={this.state.description}
+                onChange={this.handleChange}
+                required
+              ></TextareaAutosize>
               <div className="form-group">
                 <button className="btn btn-outline-primary btn-block">
                   <i className="fa fa-paper-plane" /> Submit

@@ -46,7 +46,7 @@ router.get("/", (req, res) => {
 router.post("/", middleware.isLoggedIn, (req, res) => {
   upload(req, res, err => {
     if (err) {
-      console.log(err);
+      res.status(403).json(err);
     } else {
       //Retrieving new camp data from form.
       let campName = req.body.name;
