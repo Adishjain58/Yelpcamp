@@ -10,52 +10,80 @@ import Signup from "./components/Signup/signup";
 import Comment from "./components/Comment/commentNew";
 import CommentEdit from "./components/Comment/commentEdit";
 import CampgroundEdit from "./components/Campground/campgroundEdit";
-import notification from "./Services/notifications";
+import RedirectIfAuth from "./components/RedirectIfAuth/redirectIfAuth";
+import RedirectIfNotAuth from "./components/RedirectIfNotAuth/RedirectIfNotAuth";
+
 class App extends React.Component {
   render() {
     return (
       <Router>
         <Route
           path={/[^/]/}
-          render={props => <Styles {...props} noty={new notification()} />}
+          render={props => <Styles {...props} noty={this.props.noty} />}
         />
         <Route exact path="/" component={Landing} />
-        <Route
+        {/* <Route
           exact
           path="/campgrounds/new"
-          render={props => <CampGround {...props} noty={new notification()} />}
-        />
+          render={props => <CampGround {...props} noty={this.props.noty} />}
+        /> */}
+        <RedirectIfNotAuth
+          exact
+          path="/campgrounds/create/new"
+          component={CampGround}
+          props={{ noty: this.props.noty }}
+        ></RedirectIfNotAuth>
         <Route exact path="/campgrounds" component={Campgrounds} />
-        <Route
+        {/* <Route
           path="/login"
-          render={props => <Login {...props} noty={new notification()} />}
-        ></Route>
-        <Route
+          render={props => <Login {...props} noty={this.props.noty} />}
+        ></Route> */}
+        <RedirectIfAuth
+          path="/login"
+          component={Login}
+          props={{ noty: this.props.noty }}
+        ></RedirectIfAuth>
+        {/* <Route
           path="/signup"
-          render={props => <Signup {...props} noty={new notification()} />}
-        />
+          render={props => <Signup {...props} noty={this.props.noty} />}
+        /> */}
+        <RedirectIfAuth
+          path="/signup"
+          component={Signup}
+          props={{ noty: this.props.noty }}
+        ></RedirectIfAuth>
         <Route
           exact
           path="/campgrounds/:id"
-          render={props => <Show {...props} noty={new notification()} />}
+          render={props => <Show {...props} noty={this.props.noty} />}
         ></Route>
         <Route
           exact
           path="/campgrounds/:id/edit"
-          render={props => (
-            <CampgroundEdit {...props} noty={new notification()} />
-          )}
+          render={props => <CampgroundEdit {...props} noty={this.props.noty} />}
         ></Route>
-        <Route
+        <RedirectIfNotAuth
           exact
           path="/campgrounds/:id/comments/new"
-          render={props => <Comment {...props} noty={new notification()} />}
-        />
-        <Route
+          component={Comment}
+          props={{ noty: this.props.noty }}
+        ></RedirectIfNotAuth>
+        {/* <Route
+          exact
+          path="/campgrounds/:id/comments/new"
+          render={props => <Comment {...props} noty={this.props.noty} />}
+        /> */}
+        <RedirectIfNotAuth
           exact
           path="/campgrounds/:id/comments/:commentId/edit"
-          render={props => <CommentEdit {...props} noty={new notification()} />}
-        />
+          component={CommentEdit}
+          props={{ noty: this.props.noty }}
+        ></RedirectIfNotAuth>
+        {/* <Route
+          exact
+          path="/campgrounds/:id/comments/:commentId/edit"
+          render={props => <CommentEdit {...props} noty={this.props.noty} />}
+        /> */}
       </Router>
     );
   }

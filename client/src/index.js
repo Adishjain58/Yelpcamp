@@ -3,10 +3,11 @@ import ReactDOM from "react-dom";
 import { withRouter, BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import notification from "./Services/notifications";
 import * as serviceWorker from "./serviceWorker";
 
 const Main = withRouter(props => {
-  return <App {...props} />;
+  return <App {...props} noty={new notification()} />;
 });
 
 ReactDOM.render(

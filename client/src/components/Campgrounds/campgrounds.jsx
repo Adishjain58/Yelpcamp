@@ -53,7 +53,10 @@ class campgrounds extends Component {
           <h1>Welcome to YelpCamp!</h1>
           <p>View our hand-picked campgrounds from all over the world</p>
           <p>
-            <Link className="btn btn-primary btn-lg" to="/campgrounds/new">
+            <Link
+              className="btn btn-primary btn-lg"
+              to="/campgrounds/create/new"
+            >
               Add new Campground
             </Link>
           </p>
