@@ -15,6 +15,10 @@ export default class style extends Component {
       this.setState({
         user: JSON.parse(localStorage.getItem("user"))
       });
+    } else {
+      this.setState({
+        user: {}
+      });
     }
   };
 
@@ -22,6 +26,10 @@ export default class style extends Component {
     if (localStorage.getItem("user")) {
       this.setState({
         user: JSON.parse(localStorage.getItem("user"))
+      });
+    } else {
+      this.setState({
+        user: {}
       });
     }
   };

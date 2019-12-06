@@ -14,6 +14,12 @@ import RedirectIfAuth from "./components/RedirectIfAuth/redirectIfAuth";
 import RedirectIfNotAuth from "./components/RedirectIfNotAuth/RedirectIfNotAuth";
 
 class App extends React.Component {
+  componentDidMount = () => {
+    if (localStorage.getItem("user")) {
+      localStorage.removeItem("user");
+      this.props.history.push("/");
+    }
+  };
   render() {
     return (
       <Router>

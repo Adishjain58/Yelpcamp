@@ -33,7 +33,7 @@ export default class login extends Component {
         });
         localStorage.setItem("user", JSON.stringify(user.data));
         this.props.noty.success("Logged in Successfully");
-        this.props.history.push("/");
+        this.props.history.push("/campgrounds");
       })
       .catch(err => {
         this.setState({
