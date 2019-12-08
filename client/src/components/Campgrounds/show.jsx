@@ -13,7 +13,8 @@ class show extends Component {
       liked: false,
       owner: false,
       hidden: "",
-      loading: false
+      loading: false,
+      time: ""
     };
   }
 
@@ -137,6 +138,29 @@ class show extends Component {
   };
 
   render() {
+    const days = " Days Ago";
+    const hours = " Hours Ago";
+    const minutes = " Minutes Ago";
+    const seconds = " Seconds Ago";
+
+    const dateFinder = (date, divider) => {
+      let date1 = new Date(date);
+      let date2 = new Date();
+      return Math.trunc((date2 - date1) / divider);
+    };
+
+    const dateCalculator = comment => {
+      const res =
+        dateFinder(comment, 86400000) >= 1
+          ? dateFinder(comment, 86400000) + days
+          : dateFinder(comment, 3600000) >= 1
+          ? dateFinder(comment, 3600000) + hours
+          : dateFinder(comment, 60000) >= 1
+          ? dateFinder(comment, 60000) + minutes
+          : dateFinder(comment, 1000) + seconds;
+      return res;
+    };
+
     return (
       <Fragment>
         {this.state.loading ? (
@@ -246,7 +270,9 @@ class show extends Component {
                               <div className="col-sm-12" key={index}>
                                 <div className="d-flex justify-content-between">
                                   <strong>{comment.author.username}</strong>
-                                  <span className="text-right" id="date"></span>
+                                  <span className="text-right" id="date">
+                                    {dateCalculator(comment.createdAt)}
+                                  </span>
                                 </div>
                                 <p>{comment.text}</p>
 

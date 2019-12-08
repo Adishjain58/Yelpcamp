@@ -9,7 +9,7 @@ const RedirectIfNotAuth = ({ path, props, component: Component }) => {
           return <Component {...props} {...routerProps} />;
         }
 
-        return <Redirect to="/campgrounds" />;
+        return <Redirect to="/login" />;
       }}
     />
   );
