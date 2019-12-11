@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import spinner from "../../lg.rotating-balls-spinner.gif";
-import { TextField, Container } from "@material-ui/core";
+import { TextField, Container, Button } from "@material-ui/core";
 
 class commentEdit extends Component {
   constructor(props) {
@@ -81,12 +81,16 @@ class commentEdit extends Component {
                 fullWidth
                 required
               />
-              <button
+              <Button
+                fullWidth
                 type="submit"
-                className="btn btn-outline-primary btn-block mb-4"
+                variant="outlined"
+                color="primary"
+                className="mb-4"
               >
-                <i className="fa fa-paper-plane" /> Submit
-              </button>
+                <i className="fa fa-paper-plane" />
+                &nbsp;Submit
+              </Button>
             </form>
             <Link to={`/campgrounds/${this.props.match.params.id}`}>
               Go Back

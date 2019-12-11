@@ -2,6 +2,10 @@ import React, { Component, Fragment } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import spinner from "../../lg.rotating-balls-spinner.gif";
+import { Container, TextField, Button } from "@material-ui/core";
+import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import CloseIcon from "@material-ui/icons/Close";
+import AddIcon from "@material-ui/icons/Add";
 
 class show extends Component {
   constructor(props) {
@@ -14,7 +18,8 @@ class show extends Component {
       owner: false,
       hidden: "",
       loading: false,
-      time: ""
+      show: false,
+      text: ""
     };
   }
 
@@ -45,6 +50,37 @@ class show extends Component {
           hidden: camp.data.image,
           loading: false
         });
+      })
+      .catch(err => console.log(err));
+  };
+
+  handleChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.setState({
+      loading: true
+    });
+    const comment = {
+      text: this.state.text
+    };
+    axios
+      .post(`/campgrounds/${this.state.camp._id}/comments`, comment)
+      .then(comment => {
+        this.props.noty.success("Comment added successfully");
+        axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
+          this.setState({
+            camp: camp.data,
+            loading: false,
+            show: false,
+            text: ""
+          });
+        });
+        this.props.history.push(`/campgrounds/${this.state.camp._id}`);
       })
       .catch(err => console.log(err));
   };
@@ -137,6 +173,18 @@ class show extends Component {
       .catch(err => console.log(err));
   };
 
+  commentShow = () => {
+    if (this.state.show) {
+      this.setState({
+        show: false
+      });
+    } else {
+      this.setState({
+        show: true
+      });
+    }
+  };
+
   render() {
     const days = " Days Ago";
     const hours = " Hours Ago";
@@ -203,24 +251,17 @@ class show extends Component {
                       </p>
 
                       <div className="d-flex my-3 mx-2">
-                        <button
-                          className={`btn ${
-                            this.state.liked
-                              ? "btn-primary"
-                              : "btn-outline-primary"
-                          }`}
+                        <Button
+                          variant={this.state.liked ? "contained" : "outlined"}
+                          color="primary"
                           onClick={
                             this.state.liked
                               ? this.handleUnlike
                               : this.handleLike
                           }
                         >
-                          {this.state.liked ? (
-                            <i className="fa fa-thumbs-down"></i>
-                          ) : (
-                            <i className="fa fa-thumbs-up"></i>
-                          )}
-                        </button>
+                          <ThumbUpIcon fontSize="small"></ThumbUpIcon>
+                        </Button>
 
                         <h3 className="text-muted">
                           &nbsp;{this.state.likes.length}
@@ -253,15 +294,55 @@ class show extends Component {
                       )}
                       <div className="jumbotron">
                         {this.state.authUser && (
-                          <div className="text-right">
-                            <Link
-                              className="btn btn-outline-success ml-3"
-                              to={`/campgrounds/${this.state.camp._id}/comments/new`}
-                            >
-                              <i className="fa fa-paper-plane"></i> Add new
-                              Comment
-                            </Link>
-                          </div>
+                          <Fragment>
+                            <div className="text-right">
+                              <Button
+                                type="submit"
+                                variant="outlined"
+                                color="secondary"
+                                onClick={this.commentShow}
+                              >
+                                {this.state.show ? (
+                                  <Fragment>
+                                    <CloseIcon></CloseIcon>&nbsp;Cancel
+                                  </Fragment>
+                                ) : (
+                                  <Fragment>
+                                    <AddIcon></AddIcon> &nbsp;Add new Comment
+                                  </Fragment>
+                                )}
+                              </Button>
+                            </div>
+                            {this.state.show && (
+                              <Container maxWidth="sm">
+                                <form
+                                  className="col-12 mb-3"
+                                  onSubmit={this.handleSubmit}
+                                >
+                                  <TextField
+                                    className="mt-5 mb-4"
+                                    id="outlined-basic"
+                                    label="Enter Text for comment"
+                                    variant="outlined"
+                                    name="text"
+                                    value={this.state.text}
+                                    onChange={this.handleChange}
+                                    fullWidth
+                                    required
+                                  />
+                                  <Button
+                                    fullWidth
+                                    type="submit"
+                                    variant="outlined"
+                                    color="primary"
+                                  >
+                                    <i className="fa fa-paper-plane" />{" "}
+                                    &nbsp;Submit
+                                  </Button>
+                                </form>
+                              </Container>
+                            )}
+                          </Fragment>
                         )}
                         <hr />
                         <div className="row">
@@ -281,22 +362,28 @@ class show extends Component {
                                       comment.author.id && (
                                       <div className="d-flex">
                                         <Link
+                                          style={{ textDecoration: "none" }}
                                           to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
                                         >
-                                          <button className="btn btn-outline-warning m-3 btn-sm">
+                                          <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            className="m-3"
+                                          >
                                             Edit Comment
-                                          </button>
+                                          </Button>
                                         </Link>
-
-                                        <button
-                                          className="btn btn-sm btn-outline-danger mt-3"
-                                          style={{ height: "33px" }}
+                                        <Button
+                                          variant="outlined"
+                                          color="secondary"
+                                          style={{ height: "36px" }}
+                                          className="mt-3"
                                           onClick={() =>
                                             this.deleteComment(comment._id)
                                           }
                                         >
                                           Delete Comment
-                                        </button>
+                                        </Button>
                                       </div>
                                     )
                                   : ""}

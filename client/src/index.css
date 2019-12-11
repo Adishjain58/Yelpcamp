@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+.MuiButton-containedPrimary {
+  color: #fff;
+  background-color: #1b46e4c7;
+}
+
 #landing-header {
   z-index: 1;
   position: relative;

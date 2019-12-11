@@ -7,7 +7,7 @@ import Landing from "./components/Landing/landing";
 import Campgrounds from "./components/Campgrounds/campgrounds";
 import Show from "./components/Campgrounds/show";
 import Signup from "./components/Signup/signup";
-import Comment from "./components/Comment/commentNew";
+// import Comment from "./components/Comment/commentNew";
 import CommentEdit from "./components/Comment/commentEdit";
 import CampgroundEdit from "./components/Campground/campgroundEdit";
 import RedirectIfAuth from "./components/RedirectIfAuth/redirectIfAuth";
@@ -68,12 +68,12 @@ class App extends React.Component {
           path="/campgrounds/:id/edit"
           render={props => <CampgroundEdit {...props} noty={this.props.noty} />}
         ></Route>
-        <RedirectIfNotAuth
+        {/* <RedirectIfNotAuth
           exact
           path="/campgrounds/:id/comments/new"
           component={Comment}
           props={{ noty: this.props.noty }}
-        ></RedirectIfNotAuth>
+        ></RedirectIfNotAuth> */}
         {/* <Route
           exact
           path="/campgrounds/:id/comments/new"
