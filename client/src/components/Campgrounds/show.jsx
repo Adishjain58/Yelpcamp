@@ -19,7 +19,11 @@ class show extends Component {
       hidden: "",
       loading: false,
       show: false,
-      text: ""
+      text: "",
+      comment: {
+        commentId: "",
+        text: ""
+      }
     };
   }
 
@@ -185,6 +189,64 @@ class show extends Component {
     }
   };
 
+  editCommentShow = (commentId, text) => {
+    this.setState({
+      comment: {
+        commentId,
+        text
+      }
+    });
+  };
+
+  editCommentHide = () => {
+    this.setState({
+      comment: {
+        commentId: "",
+        text: ""
+      }
+    });
+  };
+
+  handleEditComment = (e, commentId) => {
+    this.setState({
+      comment: {
+        commentId,
+        text: e.target.value
+      }
+    });
+  };
+
+  editComment = (e, commentId) => {
+    e.preventDefault();
+    this.setState({
+      loading: true
+    });
+    const comment = {
+      text: this.state.comment.text
+    };
+    axios
+      .put(
+        `/campgrounds/${this.props.match.params.id}/comments/${commentId}`,
+        comment
+      )
+      .then(comment => {
+        axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
+          this.setState({
+            camp: camp.data,
+            loading: false,
+            comment: {
+              commentId: "",
+              text: ""
+            }
+          });
+        });
+
+        this.props.noty.success("Comment updated successfully");
+        this.props.history.push(`/campgrounds/${this.props.match.params.id}`);
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     const days = " Days Ago";
     const hours = " Hours Ago";
@@ -348,20 +410,53 @@ class show extends Component {
                         <div className="row">
                           {this.state.camp.comments.map((comment, index) => {
                             return (
-                              <div className="col-sm-12" key={index}>
+                              <div className="col-sm-12 mb-2" key={index}>
                                 <div className="d-flex justify-content-between">
                                   <strong>{comment.author.username}</strong>
                                   <span className="text-right" id="date">
                                     {dateCalculator(comment.createdAt)}
                                   </span>
                                 </div>
-                                <p>{comment.text}</p>
 
-                                {this.state.authUser
-                                  ? this.state.authUser._id.toString() ===
-                                      comment.author.id && (
-                                      <div className="d-flex">
-                                        <Link
+                                <Fragment>
+                                  {this.state.comment.commentId ===
+                                  comment._id ? (
+                                    <Fragment>
+                                      <TextField
+                                        border={0}
+                                        className="mt-1 mb-4 "
+                                        id="outlined-basic"
+                                        // variant="outlined"
+                                        name="text"
+                                        value={this.state.comment.text}
+                                        onKeyPress={e => {
+                                          e.key === "Enter" &&
+                                            this.editComment(e, comment._id);
+                                        }}
+                                        onChange={e =>
+                                          this.handleEditComment(e, comment._id)
+                                        }
+                                        fullWidth
+                                        required
+                                      />
+                                      <Button
+                                        type="submit"
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={this.editCommentHide}
+                                      >
+                                        <CloseIcon></CloseIcon>
+                                        &nbsp;Cancel
+                                      </Button>
+                                    </Fragment>
+                                  ) : (
+                                    <Fragment>
+                                      <p>{comment.text}</p>
+                                      {this.state.authUser
+                                        ? this.state.authUser._id.toString() ===
+                                            comment.author.id && (
+                                            <div className="d-flex mt-2">
+                                              {/* <Link
                                           style={{ textDecoration: "none" }}
                                           to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
                                         >
@@ -372,21 +467,39 @@ class show extends Component {
                                           >
                                             Edit Comment
                                           </Button>
-                                        </Link>
-                                        <Button
-                                          variant="outlined"
-                                          color="secondary"
-                                          style={{ height: "36px" }}
-                                          className="mt-3"
-                                          onClick={() =>
-                                            this.deleteComment(comment._id)
-                                          }
-                                        >
-                                          Delete Comment
-                                        </Button>
-                                      </div>
-                                    )
-                                  : ""}
+                                        </Link> */}
+                                              <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                className=" ml-0 "
+                                                onClick={() =>
+                                                  this.editCommentShow(
+                                                    comment._id,
+                                                    comment.text
+                                                  )
+                                                }
+                                              >
+                                                Edit Comment
+                                              </Button>
+                                              <Button
+                                                variant="outlined"
+                                                color="secondary"
+                                                style={{ height: "36px" }}
+                                                className=" ml-3"
+                                                onClick={() =>
+                                                  this.deleteComment(
+                                                    comment._id
+                                                  )
+                                                }
+                                              >
+                                                Delete Comment
+                                              </Button>
+                                            </div>
+                                          )
+                                        : ""}
+                                    </Fragment>
+                                  )}
+                                </Fragment>
                               </div>
                             );
                           })}
