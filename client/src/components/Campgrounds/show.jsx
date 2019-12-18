@@ -20,10 +20,13 @@ class show extends Component {
       loading: false,
       show: false,
       text: "",
+      comments: [],
       comment: {
         commentId: "",
         text: ""
-      }
+      },
+      commentLoading: false,
+      likeLoading: false
     };
   }
 
@@ -47,6 +50,7 @@ class show extends Component {
         }
         this.setState({
           camp: camp.data,
+          comments: camp.data.comments,
           likes: camp.data.likes,
           liked: likes > 0 ? true : false,
           owner,
@@ -67,7 +71,7 @@ class show extends Component {
   handleSubmit = e => {
     e.preventDefault();
     this.setState({
-      loading: true
+      commentLoading: true
     });
     const comment = {
       text: this.state.text
@@ -79,7 +83,8 @@ class show extends Component {
         axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
           this.setState({
             camp: camp.data,
-            loading: false,
+            commentLoading: false,
+            comments: camp.data.comments,
             show: false,
             text: ""
           });
@@ -92,7 +97,7 @@ class show extends Component {
   handleLike = () => {
     if (this.state.authUser) {
       this.setState({
-        loading: true
+        likeLoading: true
       });
       axios
         .post(`/campgrounds/${this.props.match.params.id}/like`)
@@ -103,7 +108,7 @@ class show extends Component {
           this.setState({
             likes: camp.data.likes,
             liked: likes > 0 ? true : false,
-            loading: false
+            likeLoading: false
           });
           this.props.noty.success("Camp liked successfully");
         })
@@ -116,7 +121,7 @@ class show extends Component {
   handleUnlike = () => {
     if (this.state.authUser) {
       this.setState({
-        loading: true
+        likeLoading: true
       });
       axios
         .post(`/campgrounds/${this.props.match.params.id}/unlike`)
@@ -127,7 +132,7 @@ class show extends Component {
           this.setState({
             likes: camp.data.likes,
             liked: likes > 0 ? true : false,
-            loading: false
+            likeLoading: false
           });
           this.props.noty.success("Camp unliked successfully");
         })
@@ -140,7 +145,7 @@ class show extends Component {
   deleteComment = commentId => {
     if (this.state.authUser) {
       this.setState({
-        loading: true
+        commentLoading: true
       });
       axios
         .delete(
@@ -151,7 +156,8 @@ class show extends Component {
           axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
             this.setState({
               camp: camp.data,
-              loading: false
+              commentLoading: false,
+              comments: camp.data.comments
             });
           });
         })
@@ -174,7 +180,11 @@ class show extends Component {
         this.props.noty.success("Campground deleted successfully");
         this.props.history.push("/campgrounds");
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        this.setState({
+          loading: false
+        });
+      });
   };
 
   commentShow = () => {
@@ -219,7 +229,7 @@ class show extends Component {
   editComment = (e, commentId) => {
     e.preventDefault();
     this.setState({
-      loading: true
+      commentLoading: true
     });
     const comment = {
       text: this.state.comment.text
@@ -233,7 +243,8 @@ class show extends Component {
         axios.get(`/campgrounds/${this.props.match.params.id}`).then(camp => {
           this.setState({
             camp: camp.data,
-            loading: false,
+            commentLoading: false,
+            comments: camp.data.comments,
             comment: {
               commentId: "",
               text: ""
@@ -311,24 +322,35 @@ class show extends Component {
                       <p className="px-2">
                         <em>Submitted By {this.state.camp.author.username}</em>
                       </p>
+                      {this.state.likeLoading ? (
+                        <div className="ml-2">
+                          <img
+                            src={spinner}
+                            alt=""
+                            style={{ height: "50px" }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="d-flex my-3 mx-2">
+                          <Button
+                            variant={
+                              this.state.liked ? "contained" : "outlined"
+                            }
+                            color="primary"
+                            onClick={
+                              this.state.liked
+                                ? this.handleUnlike
+                                : this.handleLike
+                            }
+                          >
+                            <ThumbUpIcon fontSize="small"></ThumbUpIcon>
+                          </Button>
 
-                      <div className="d-flex my-3 mx-2">
-                        <Button
-                          variant={this.state.liked ? "contained" : "outlined"}
-                          color="primary"
-                          onClick={
-                            this.state.liked
-                              ? this.handleUnlike
-                              : this.handleLike
-                          }
-                        >
-                          <ThumbUpIcon fontSize="small"></ThumbUpIcon>
-                        </Button>
-
-                        <h3 className="text-muted">
-                          &nbsp;{this.state.likes.length}
-                        </h3>
-                      </div>
+                          <h3 className="text-muted">
+                            &nbsp;{this.state.likes.length}
+                          </h3>
+                        </div>
+                      )}
 
                       {this.state.owner && (
                         <div className="d-flex">
@@ -354,109 +376,117 @@ class show extends Component {
                           </button>
                         </div>
                       )}
-                      <div className="jumbotron">
-                        {this.state.authUser && (
-                          <Fragment>
-                            <div className="text-right">
-                              <Button
-                                type="submit"
-                                variant="outlined"
-                                color="secondary"
-                                onClick={this.commentShow}
-                              >
-                                {this.state.show ? (
-                                  <Fragment>
-                                    <CloseIcon></CloseIcon>&nbsp;Cancel
-                                  </Fragment>
-                                ) : (
-                                  <Fragment>
-                                    <AddIcon></AddIcon> &nbsp;Add new Comment
-                                  </Fragment>
-                                )}
-                              </Button>
-                            </div>
-                            {this.state.show && (
-                              <Container maxWidth="sm">
-                                <form
-                                  className="col-12 mb-3"
-                                  onSubmit={this.handleSubmit}
+                      {this.state.commentLoading ? (
+                        <div className="text-center mt-5">
+                          <img src={spinner} alt="" />
+                        </div>
+                      ) : (
+                        <div className="jumbotron">
+                          {this.state.authUser && (
+                            <Fragment>
+                              <div className="text-right">
+                                <Button
+                                  type="submit"
+                                  variant="outlined"
+                                  color="secondary"
+                                  onClick={this.commentShow}
                                 >
-                                  <TextField
-                                    className="mt-5 mb-4"
-                                    id="outlined-basic"
-                                    label="Enter Text for comment"
-                                    variant="outlined"
-                                    name="text"
-                                    value={this.state.text}
-                                    onChange={this.handleChange}
-                                    fullWidth
-                                    required
-                                  />
-                                  <Button
-                                    fullWidth
-                                    type="submit"
-                                    variant="outlined"
-                                    color="primary"
-                                  >
-                                    <i className="fa fa-paper-plane" />{" "}
-                                    &nbsp;Submit
-                                  </Button>
-                                </form>
-                              </Container>
-                            )}
-                          </Fragment>
-                        )}
-                        <hr />
-                        <div className="row">
-                          {this.state.camp.comments.map((comment, index) => {
-                            return (
-                              <div className="col-sm-12 mb-2" key={index}>
-                                <div className="d-flex justify-content-between">
-                                  <strong>{comment.author.username}</strong>
-                                  <span className="text-right" id="date">
-                                    {dateCalculator(comment.createdAt)}
-                                  </span>
-                                </div>
-
-                                <Fragment>
-                                  {this.state.comment.commentId ===
-                                  comment._id ? (
+                                  {this.state.show ? (
                                     <Fragment>
-                                      <TextField
-                                        border={0}
-                                        className="mt-1 mb-4 "
-                                        id="outlined-basic"
-                                        // variant="outlined"
-                                        name="text"
-                                        value={this.state.comment.text}
-                                        onKeyPress={e => {
-                                          e.key === "Enter" &&
-                                            this.editComment(e, comment._id);
-                                        }}
-                                        onChange={e =>
-                                          this.handleEditComment(e, comment._id)
-                                        }
-                                        fullWidth
-                                        required
-                                      />
-                                      <Button
-                                        type="submit"
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={this.editCommentHide}
-                                      >
-                                        <CloseIcon></CloseIcon>
-                                        &nbsp;Cancel
-                                      </Button>
+                                      <CloseIcon></CloseIcon>&nbsp;Cancel
                                     </Fragment>
                                   ) : (
                                     <Fragment>
-                                      <p>{comment.text}</p>
-                                      {this.state.authUser
-                                        ? this.state.authUser._id.toString() ===
-                                            comment.author.id && (
-                                            <div className="d-flex mt-2">
-                                              {/* <Link
+                                      <AddIcon></AddIcon> &nbsp;Add new Comment
+                                    </Fragment>
+                                  )}
+                                </Button>
+                              </div>
+                              {this.state.show && (
+                                <Container maxWidth="sm">
+                                  <form
+                                    className="col-12 mb-3"
+                                    onSubmit={this.handleSubmit}
+                                  >
+                                    <TextField
+                                      className="mt-5 mb-4"
+                                      id="outlined-basic"
+                                      label="Enter Text for comment"
+                                      variant="outlined"
+                                      name="text"
+                                      value={this.state.text}
+                                      onChange={this.handleChange}
+                                      fullWidth
+                                      required
+                                    />
+                                    <Button
+                                      fullWidth
+                                      type="submit"
+                                      variant="outlined"
+                                      color="primary"
+                                    >
+                                      <i className="fa fa-paper-plane" />{" "}
+                                      &nbsp;Submit
+                                    </Button>
+                                  </form>
+                                </Container>
+                              )}
+                            </Fragment>
+                          )}
+                          <hr />
+                          <div className="row">
+                            {this.state.comments.map((comment, index) => {
+                              return (
+                                <div className="col-sm-12 mb-2" key={index}>
+                                  <div className="d-flex justify-content-between">
+                                    <strong>{comment.author.username}</strong>
+                                    <span className="text-right" id="date">
+                                      {dateCalculator(comment.createdAt)}
+                                    </span>
+                                  </div>
+
+                                  <Fragment>
+                                    {this.state.comment.commentId ===
+                                    comment._id ? (
+                                      <Fragment>
+                                        <TextField
+                                          border={0}
+                                          className="mt-1 mb-4 "
+                                          id="outlined-basic"
+                                          // variant="outlined"
+                                          name="text"
+                                          value={this.state.comment.text}
+                                          onKeyPress={e => {
+                                            e.key === "Enter" &&
+                                              this.editComment(e, comment._id);
+                                          }}
+                                          onChange={e =>
+                                            this.handleEditComment(
+                                              e,
+                                              comment._id
+                                            )
+                                          }
+                                          fullWidth
+                                          required
+                                        />
+                                        <Button
+                                          type="submit"
+                                          variant="outlined"
+                                          color="secondary"
+                                          onClick={this.editCommentHide}
+                                        >
+                                          <CloseIcon></CloseIcon>
+                                          &nbsp;Cancel
+                                        </Button>
+                                      </Fragment>
+                                    ) : (
+                                      <Fragment>
+                                        <p>{comment.text}</p>
+                                        {this.state.authUser
+                                          ? this.state.authUser._id.toString() ===
+                                              comment.author.id && (
+                                              <div className="d-flex mt-2">
+                                                {/* <Link
                                           style={{ textDecoration: "none" }}
                                           to={`/campgrounds/${this.state.camp._id}/comments/${comment._id}/edit`}
                                         >
@@ -468,43 +498,44 @@ class show extends Component {
                                             Edit Comment
                                           </Button>
                                         </Link> */}
-                                              <Button
-                                                variant="outlined"
-                                                color="primary"
-                                                className=" ml-0 "
-                                                onClick={() =>
-                                                  this.editCommentShow(
-                                                    comment._id,
-                                                    comment.text
-                                                  )
-                                                }
-                                              >
-                                                Edit Comment
-                                              </Button>
-                                              <Button
-                                                variant="outlined"
-                                                color="secondary"
-                                                style={{ height: "36px" }}
-                                                className=" ml-3"
-                                                onClick={() =>
-                                                  this.deleteComment(
-                                                    comment._id
-                                                  )
-                                                }
-                                              >
-                                                Delete Comment
-                                              </Button>
-                                            </div>
-                                          )
-                                        : ""}
-                                    </Fragment>
-                                  )}
-                                </Fragment>
-                              </div>
-                            );
-                          })}
+                                                <Button
+                                                  variant="outlined"
+                                                  color="primary"
+                                                  className=" ml-0 "
+                                                  onClick={() =>
+                                                    this.editCommentShow(
+                                                      comment._id,
+                                                      comment.text
+                                                    )
+                                                  }
+                                                >
+                                                  Edit Comment
+                                                </Button>
+                                                <Button
+                                                  variant="outlined"
+                                                  color="secondary"
+                                                  style={{ height: "36px" }}
+                                                  className=" ml-3"
+                                                  onClick={() =>
+                                                    this.deleteComment(
+                                                      comment._id
+                                                    )
+                                                  }
+                                                >
+                                                  Delete Comment
+                                                </Button>
+                                              </div>
+                                            )
+                                          : ""}
+                                      </Fragment>
+                                    )}
+                                  </Fragment>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
