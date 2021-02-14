@@ -6,7 +6,7 @@ export default class style extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {}
+      user: {},
     };
   }
 
@@ -48,7 +48,7 @@ export default class style extends Component {
   render() {
     return (
       <div>
-        <Navbar user={this.state.user} logout={this.logout}></Navbar>
+        <Navbar state={this.state} logout={this.logout} handleClick={this.handleClick} handleClose={this.handleClose} props={this.props}></Navbar>
       </div>
     );
   }

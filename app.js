@@ -10,6 +10,7 @@ const flash = require("connect-flash");
 const commentRoutes = require("./routes/comments");
 const campgroundRoutes = require("./routes/campgrounds");
 const indexRoutes = require("./routes/index");
+const userRoutes=require("./routes/user")
 
 // Models Import
 
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 
 // To use all routes
 app.use(indexRoutes);
+app.use("/user",userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
