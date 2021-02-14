@@ -4,36 +4,6 @@ const Campground = require("../models/campground");
 const middleware = require("../middleware");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
-
-// Set storage engine to upload the images
-const storage = multer.diskStorage({
-  destination: "public/uploads/",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  }
-});
-
-// Init upload to upload the image
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10000000 }
-}).single("myImage");
-
-// Function to delete the image and here value is the path of image that is going to be deleted.
-const deleteFile = imagePath => {
-  // Converting it acc. to windows.
-  imagePath = imagePath.replace(/[/]/, "\\");
-  // Retrieving current directory path
-  let direct = __dirname;
-  // changing to get the new path
-  direct = direct.substr(0, direct.length - 6);
-  // Deleting the old file
-  fs.unlinkSync(direct + "public\\" + imagePath);
-};
 
 // Index- show all campgrounds
 router.get("/", (req, res) => {
@@ -44,20 +14,18 @@ router.get("/", (req, res) => {
 
 // Create- add new campground to databse
 router.post("/", middleware.isLoggedIn, (req, res) => {
-  upload(req, res, err => {
-    if (err) {
-      res.status(403).json(err);
-    } else {
       //Retrieving new camp data from form.
       let campName = req.body.name;
-      let newUrl = `uploads/${req.file.filename}`;
+      let imageUrl = req.body.imageUrl;
       let description = req.body.description;
       let authorId = req.user._id;
       let authorName = req.user.username;
       let price = req.body.price;
+      let imageAlt=req.body.imageAlt
       let newCamp = {
         name: campName,
-        image: newUrl,
+        imageUrl,
+        imageAlt,
         description,
         price,
         author: {
@@ -69,11 +37,10 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
       // Create a new campground and save in db.
       Campground.create(newCamp)
         .then(camp => {
+          console.log(camp)
           res.json(camp);
         })
         .catch(err => console.log(err));
-    }
-  });
 });
 
 // SHOW -  To show details of a single campground.
@@ -99,24 +66,18 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
 });
 
 // To Update the details of camp
-router.put("/:id", upload, middleware.checkCampgroundOwnership, (req, res) => {
+router.put("/:id", middleware.checkCampgroundOwnership, (req, res) => {
   let campName = req.body.name;
   let description = req.body.description;
   let authorId = req.user._id;
   let authorName = req.user.username;
   let price = req.body.price;
-  let newUrl;
-
-  if (req.file) {
-    deleteFile(req.body.hidden);
-    // Retrieving new camp data from form.
-    newUrl = `uploads/${req.file.filename}`;
-  } else {
-    newUrl = req.body.hidden;
-  }
+  let imageUrl=req.body.imageUrl;
+ let imageAlt=req.body.imageAlt;
   let newCamp = {
     name: campName,
-    image: newUrl,
+    imageUrl,
+    imageAlt,
     description,
     price,
     author: {
@@ -124,7 +85,7 @@ router.put("/:id", upload, middleware.checkCampgroundOwnership, (req, res) => {
       username: authorName
     }
   };
-
+  console.log(newCamp)
   // To update the camp
   Campground.findByIdAndUpdate(req.params.id, newCamp)
     .then(camp => {
@@ -135,10 +96,8 @@ router.put("/:id", upload, middleware.checkCampgroundOwnership, (req, res) => {
 
 // To delete a campground
 router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
-  let url;
   Campground.findById(req.params.id)
     .then(camp => {
-      url = camp.image;
       camp.comments.forEach(comment => {
         Comment.findByIdAndDelete(comment._id)
           .then(() => console.log("Comment deleted successfully"))
@@ -146,7 +105,7 @@ router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
       });
       Campground.deleteOne(camp)
         .then(() => {
-          deleteFile(url);
+         
           res.json({ msg: "deleted Successfully" });
         })
         .catch(err => console.log(err));

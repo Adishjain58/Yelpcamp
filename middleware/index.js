@@ -20,7 +20,7 @@ middlewareObject.checkCommentOwnership = (req, res, next) => {
         res.redirect("back");
       });
   } else {
-    res.status(400).json({ err: "You need to be logged in to do that" });
+    res.status(401).json({ err: "You need to be logged in to do that" });
   }
 };
 
@@ -41,7 +41,7 @@ middlewareObject.checkCampgroundOwnership = (req, res, next) => {
         res.redirect("back");
       });
   } else {
-    res.status(400).json({ err: "You need to be logged in to do that" });
+    res.status(401).json({ err: "You need to be logged in to do that" });
   }
 };
 
@@ -50,7 +50,7 @@ middlewareObject.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(400).json({ err: "You need to be logged in to do that" });
+  res.status(401).json({ err: "You need to be logged in to do that" });
 };
 
 module.exports = middlewareObject;

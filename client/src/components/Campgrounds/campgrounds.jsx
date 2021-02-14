@@ -8,23 +8,23 @@ class campgrounds extends Component {
     super(props);
     this.state = {
       camps: [],
-      loading: false
+      loading: false,
     };
   }
 
   componentDidMount = () => {
     this.setState({
-      loading: true
+      loading: true,
     });
     axios
       .get("/campgrounds")
-      .then(camps => {
+      .then((camps) => {
         this.setState({
           camps: camps.data,
-          loading: false
+          loading: false,
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
   render() {
     const campsData = () => {
@@ -34,7 +34,11 @@ class campgrounds extends Component {
             return (
               <div key={index} className=" col-lg-3 col-md-6 mb-3">
                 <div className="img-thumbnail">
-                  <img className="img-fluid mb-2" src={camp.image} alt="" />
+                  <img
+                    className="img-fluid mb-2"
+                    src={camp.imageUrl}
+                    alt={camp.imageAlt}
+                  />
                   <div className="card-title pl-2">
                     <h4>{camp.name}</h4>
                   </div>

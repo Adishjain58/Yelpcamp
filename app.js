@@ -3,8 +3,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const LocalStratergy = require("passport-local");
-const methodOverride = require("method-override");
 const flash = require("connect-flash");
+require('dotenv').config({path: __dirname + '/.env'});
 
 // Routes Import
 const commentRoutes = require("./routes/comments");
@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-app.use(methodOverride("_method"));
 app.use(flash());
 
 // Configure passport
@@ -56,7 +55,7 @@ app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
 // To retrieve the databse url.
-const db = require("./config/keys").mongoURI;
+const db = process.env['MONGI_URI']
 
 // To setup a connection with the db.
 mongoose

@@ -10,32 +10,33 @@ export default class signup extends Component {
     this.state = {
       username: "",
       password: "",
-      loading: false
+      loading: false,
     };
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     this.setState({
-      loading: true
+      loading: true,
     });
     e.preventDefault();
     axios
       .post("/register", this.state)
-      .then(user => {
+      .then((user) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         this.props.noty.success("Registered Successfully");
+        this.props.history.push("/login");
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         this.props.noty.error(err.response.data.message);
       });

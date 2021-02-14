@@ -1,119 +1,121 @@
 import React, { Component, Fragment } from "react";
-import { TextField, TextareaAutosize, Container } from "@material-ui/core";
+import {
+  TextField,
+  TextareaAutosize,
+  Container,
+  Button,
+} from "@material-ui/core";
 import Axios from "axios";
+import SendIcon from "@material-ui/icons/Send";
 import spinner from "../../lg.rotating-balls-spinner.gif";
 import { Link } from "react-router-dom";
+import { WidgetLoader, Widget } from "react-cloudinary-upload-widget";
 
 class campgroundEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
+      updatedName: "",
       description: "",
       price: "",
-      file: null,
-      hidden: "",
       checked: false,
-      updatedName: "",
-      loading: false
+      loading: false,
+      imageUrl: "",
+      imageAlt: "",
     };
   }
 
   componentDidMount = () => {
     this.setState({
-      loading: true
+      loading: true,
     });
-    Axios.get(`/campgrounds/${this.props.match.params.id}"/edit`)
-      .then(camp => {
+    Axios.get(`/campgrounds/${this.props.match.params.id}/edit`)
+      .then((camp) => {
+        console.log(camp);
         this.setState({
-          updatedName: camp.data.name,
           name: camp.data.name,
           description: camp.data.description,
           price: camp.data.price,
-          hidden: camp.data.image,
-          loading: false
+          imageUrl: camp.data.imageUrl,
+          imageAlt: camp.data.imageAlt,
+          loading: false,
+          updatedName: camp.data.name,
         });
       })
-      .catch(err => {
+      .catch((err) => {
+        if (err.response.status === 401) {
+          this.props.history.push("/login");
+        }
         this.props.noty.error(err.response.data.err);
-        this.props.history.push("/login");
       });
   };
 
-  checkChecked = e => {
+  // To upload image to cloudinary
+  uploadImage = (result) => {
+    this.setState({
+      imageUrl: result.info.secure_url,
+      imageAlt: `An image of ${result.info.original_filename}`,
+    });
+    this.props.noty.success("Image Uploaded Successfully");
+  };
+
+  checkChecked = (e) => {
     if (e.target.checked) {
       this.setState({
-        checked: true
+        checked: true,
       });
     } else {
       this.setState({
-        checked: false
+        checked: false,
       });
     }
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  handleImage = e => {
-    this.setState({
-      file: e.target.files[0]
-    });
-  };
-
-  handleSubmit = e => {
+  // To Update camp details
+  handleSubmit = (e) => {
     e.preventDefault();
-    let ext;
-    if (this.state.file) {
-      ext = this.state.file.name
-        .substring(this.state.file.name.indexOf("."))
-        .toLowerCase();
+    if (!this.state.imageUrl) {
+      this.props.noty.error("Please select an image for the camp");
     } else {
-      ext = this.state.hidden
-        .substring(this.state.hidden.indexOf("."))
-        .toLowerCase();
-    }
-    if (ext.match(/(.jpg)|(.jpeg)|(.png)|(gif)/)) {
       this.setState({
-        loading: true
+        loading: true,
       });
-      const formData = new FormData();
-
-      formData.append("myImage", this.state.file);
-      formData.append("hidden", this.state.hidden);
-      formData.append("name", this.state.updatedName);
-      formData.append("price", this.state.price);
-      formData.append("description", this.state.description);
-      const config = {
-        headers: {
-          "content-type": "multipart/form-data"
-        }
+      const campData = {
+        imageUrl: this.state.imageUrl,
+        imageAlt: this.state.imageAlt,
+        name: this.state.updatedName,
+        price: this.state.price,
+        description: this.state.description,
       };
-      Axios.put(`/campgrounds/${this.props.match.params.id}`, formData, config)
-        .then(camp => {
+
+      Axios.put(`/campgrounds/${this.props.match.params.id}`, campData)
+        .then((camp) => {
           this.setState({
-            loading: false
+            loading: false,
           });
           this.props.noty.success("Campground updated successfully");
           this.props.history.push(`/campgrounds`);
         })
-        .catch(err => {
+        .catch((err) => {
           this.setState({
-            loading: false
+            loading: false,
           });
           this.props.noty.error(err.response.data.message);
         });
-    } else {
-      this.props.noty.error("This is not a supported image format");
     }
   };
 
   render() {
     return (
       <Fragment>
+        <WidgetLoader />
         {this.state.loading ? (
           <div className="text-center mt-5">
             <img src={spinner} alt="" />
@@ -123,14 +125,7 @@ class campgroundEdit extends Component {
             <h1 className=" text-center mt-5">
               Editing CampGround {this.state.name}
             </h1>
-            <form className="col-12" action="" onSubmit={this.handleSubmit}>
-              <input
-                type="hidden"
-                name="hidden"
-                id="hidden"
-                defaultValue={this.state.hidden}
-              />
-
+            <form>
               <TextField
                 className="mt-5 mb-4"
                 id="outlined-basic"
@@ -157,30 +152,6 @@ class campgroundEdit extends Component {
                 fullWidth
                 required
               />
-              <div className="form-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="checkbox"
-                    id="check"
-                    onChange={this.checkChecked}
-                  />{" "}
-                  Want to change image?
-                </label>
-              </div>
-
-              <TextField
-                type="file"
-                className=" mb-4"
-                id="outlined-basic"
-                variant="outlined"
-                name="myImage"
-                onChange={this.handleImage}
-                disabled={!this.state.checked}
-                required={this.state.checked}
-                min="0.4"
-                fullWidth
-              />
 
               <TextareaAutosize
                 className="form-control mb-3"
@@ -194,11 +165,61 @@ class campgroundEdit extends Component {
                 required
               ></TextareaAutosize>
               <div className="form-group">
-                <button className="btn btn-outline-primary btn-block">
-                  <i className="fa fa-paper-plane" /> Submit
-                </button>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="checkbox"
+                    id="check"
+                    onChange={this.checkChecked}
+                  />{" "}
+                  Want to change image?
+                </label>
               </div>
             </form>
+            {this.state.checked && (
+              <Widget
+                sources={["local", "camera"]} // set the sources available for uploading -> by default
+                resourceType={"image"} // optionally set with 'auto', 'image', 'video' or 'raw' -> default = 'auto'
+                cloudName={`${process.env.REACT_APP_CLOUD_NAME}`} // your cloudinary account cloud name.
+                // Located on https://cloudinary.com/console/
+                uploadPreset={`${process.env.REACT_APP_UPLOAD_PRESET}`} // check that an upload preset exists and check mode is signed or unisgned
+                buttonText={"Select Image for camp"} // default 'Upload Files'
+                style={{
+                  border: "1px solid green",
+                  width: "100%",
+                  background: "none",
+                  borderRadius: "4px",
+                  color: "green",
+                  padding: "18.5px 14px",
+                  height: "auto",
+                  marginBottom: "25px",
+                }} // inline styling only or style id='cloudinary_upload_button'
+                folder={"Yelpcamp"} // set cloudinary folder name to send file
+                cropping={true} // set ability to crop images -> default = true
+                onSuccess={(result) => {
+                  this.uploadImage(result);
+                }} // add success callback -> returns result
+                // onFailure={failureCallBack} // add failure callback -> returns 'response.error' + 'response.result'
+                logging={false} // logs will be provided for success and failure messages,
+                // set to false for production -> default = true
+                customPublicId={"sample"} // set a specific custom public_id.
+                // To use the file name as the public_id use 'use_filename={true}' parameter
+                eager={"w_400,h_300,c_pad|w_260,h_200,c_crop"} // add eager transformations -> deafult = null
+                use_filename={false} // tell Cloudinary to use the original name of the uploaded
+                // file as its public ID -> default = true,
+              />
+            )}
+            <Button
+              type="button"
+              variant="outlined"
+              color="primary"
+              className="p-2"
+              onClick={this.handleSubmit}
+            >
+              Submit&nbsp;
+              <SendIcon></SendIcon>
+            </Button>
+            <br></br>
             <Link to={`/campgrounds/${this.props.match.params.id}`}>
               Go Back
             </Link>

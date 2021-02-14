@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios"
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Styles from "./components/Navbar/style";
 import Login from "./components/Login/login";
@@ -15,10 +16,14 @@ import RedirectIfNotAuth from "./components/RedirectIfNotAuth/RedirectIfNotAuth"
 
 class App extends React.Component {
   componentDidMount = () => {
-    if (localStorage.getItem("user")) {
-      localStorage.removeItem("user");
-      this.props.history.push("/");
-    }
+    axios.get("/checkLogin").catch(err=>{
+      if(err.response.status===401){
+        if (localStorage.getItem("user")) {
+          localStorage.removeItem("user");
+          this.props.history.push("/");
+        }
+      }
+    })
   };
   render() {
     return (

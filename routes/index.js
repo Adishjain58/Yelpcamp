@@ -37,4 +37,10 @@ router.get("/logout", (req, res) => {
   res.json({ msg: "Logged out successfully" });
 });
 
+router.get("/checkLogin",(req,res)=>{
+  if (!req.isAuthenticated()) {
+  res.status(401).json({ err: "You need to be logged in to do that" });
+  }
+})
+
 module.exports = router;
