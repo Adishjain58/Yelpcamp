@@ -12,7 +12,6 @@ const indexRoutes = require("./routes/index");
 const userRoutes=require("./routes/user")
 
 // Models Import
-
 const User = require("./models/user");
 
 // To start our app
