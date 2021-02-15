@@ -3,3 +3,4 @@ package-lock.json
 /public/uploads
 /client/yelpcamp/node_modules
 .env
+/config/keys_dev.js

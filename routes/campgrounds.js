@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Campground = require("../models/campground");
 const middleware = require("../middleware");
-const multer = require("multer");
-const path = require("path");
 
 // Index- show all campgrounds
 router.get("/", (req, res) => {

@@ -3,8 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const LocalStratergy = require("passport-local");
-const flash = require("connect-flash");
-require('dotenv').config({path: __dirname + '/.env'});
+const path = require('path');
 
 // Routes Import
 const commentRoutes = require("./routes/comments");
@@ -22,9 +21,7 @@ const app = express();
 // Body parser middleware.
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-app.use(flash());
 
 // Configure passport
 app.use(
@@ -40,22 +37,23 @@ passport.use(new LocalStratergy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// To pass the current user data to every template
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  res.locals.error = req.flash("error");
-  res.locals.success = req.flash("success");
-  next();
-});
-
 // To use all routes
 app.use(indexRoutes);
 app.use("/user",userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
+// Serve static assets if in production
+if(process.env.NODE_ENV==='production'){
+  // Set static folder
+  app.use(express.static('client/build'));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname,'client','build','index.html'))
+  });
+}
+
 // To retrieve the databse url.
-const db = process.env['MONGI_URI']
+const db = require('./config/keys').mongoURI;
 
 // To setup a connection with the db.
 mongoose
