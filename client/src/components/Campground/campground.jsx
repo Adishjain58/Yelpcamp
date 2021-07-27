@@ -55,7 +55,7 @@ export default class campground extends Component {
             loading: false,
           });
           this.props.noty.success("Campground created successfully");
-          this.props.history.push(`/campgrounds`);
+          this.props.history.push(`/ui/campgrounds`);
         })
         .catch((err) => {
           this.setState({
@@ -132,7 +132,7 @@ export default class campground extends Component {
                 marginBottom: "25px",
               }} // inline styling only or style id='cloudinary_upload_button'
               folder={"Yelpcamp"} // set cloudinary folder name to send file
-              cropping={true} // set ability to crop images -> default = true
+              cropping={false} // set ability to crop images -> default = true
               onSuccess={(result) => {
                 this.uploadImage(result);
               }} // add success callback -> returns result

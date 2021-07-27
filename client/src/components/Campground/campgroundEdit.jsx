@@ -53,6 +53,7 @@ class campgroundEdit extends Component {
 
   // To upload image to cloudinary
   uploadImage = (result) => {
+    console.log(result);
     this.setState({
       imageUrl: result.info.secure_url,
       imageAlt: `An image of ${result.info.original_filename}`,
@@ -101,7 +102,9 @@ class campgroundEdit extends Component {
             loading: false,
           });
           this.props.noty.success("Campground updated successfully");
-          this.props.history.push(`/campgrounds`);
+          this.props.history.push(
+            `/ui/campgrounds/${this.props.match.params.id}`,
+          );
         })
         .catch((err) => {
           this.setState({
@@ -195,7 +198,7 @@ class campgroundEdit extends Component {
                   marginBottom: "25px",
                 }} // inline styling only or style id='cloudinary_upload_button'
                 folder={"Yelpcamp"} // set cloudinary folder name to send file
-                cropping={true} // set ability to crop images -> default = true
+                cropping={false} // set ability to crop images -> default = true
                 onSuccess={(result) => {
                   this.uploadImage(result);
                 }} // add success callback -> returns result
@@ -220,7 +223,7 @@ class campgroundEdit extends Component {
               <SendIcon></SendIcon>
             </Button>
             <br></br>
-            <Link to={`/campgrounds/${this.props.match.params.id}`}>
+            <Link to={`/ui/campgrounds/${this.props.match.params.id}`}>
               Go Back
             </Link>
           </Container>

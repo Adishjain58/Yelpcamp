@@ -4,12 +4,12 @@ const RedirectIfNotAuth = ({ path, props, component: Component }) => {
   return (
     <Route
       path={path}
-      render={routerProps => {
+      render={(routerProps) => {
         if (localStorage.getItem("user")) {
           return <Component {...props} {...routerProps} />;
         }
 
-        return <Redirect to="/login" />;
+        return <Redirect to="/ui/login" />;
       }}
     />
   );

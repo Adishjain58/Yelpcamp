@@ -89,7 +89,7 @@ class show extends Component {
             text: "",
           });
         });
-        this.props.history.push(`/campgrounds/${this.state.camp._id}`);
+        this.props.history.push(`/ui/campgrounds/${this.state.camp._id}`);
       })
       .catch((err) => console.log(err));
   };
@@ -180,7 +180,7 @@ class show extends Component {
           loading: false,
         });
         this.props.noty.success("Campground deleted successfully");
-        this.props.history.push("/campgrounds");
+        this.props.history.push("/ui/campgrounds");
       })
       .catch((err) => {
         this.setState({
@@ -255,7 +255,9 @@ class show extends Component {
         });
 
         this.props.noty.success("Comment updated successfully");
-        this.props.history.push(`/campgrounds/${this.props.match.params.id}`);
+        this.props.history.push(
+          `/ui/campgrounds/${this.props.match.params.id}`,
+        );
       })
       .catch((err) => console.log(err));
   };
@@ -312,7 +314,7 @@ class show extends Component {
                       />
                       <div className="figure-caption px-2 py-2 d-flex justify-content-between">
                         <h4>
-                          <Link to={`/campgrounds/${this.state.camp._id}`}>
+                          <Link to={`/ui/campgrounds/${this.state.camp._id}`}>
                             {this.state.camp.name}
                           </Link>
                         </h4>
@@ -357,7 +359,7 @@ class show extends Component {
                       {this.state.owner && (
                         <div className="d-flex">
                           <Link
-                            to={`/campgrounds/${this.state.camp._id}/edit`}
+                            to={`/ui/campgrounds/${this.state.camp._id}/edit`}
                             className="btn btn-outline-warning m-3"
                           >
                             Edit Camp
@@ -415,11 +417,14 @@ class show extends Component {
                                         onSubmit={this.handleSubmit}
                                       >
                                         <TextField
-                                          className="mt-5 mb-4"
+                                          border={0}
+                                          className="mt-1 mb-4 "
                                           id="outlined-basic"
+                                          // variant="outlined"
+                                          name="text"
                                           label="Enter Text for comment"
                                           variant="outlined"
-                                          name="text"
+                                          // name="text"
                                           value={this.state.text}
                                           onChange={this.handleChange}
                                           fullWidth

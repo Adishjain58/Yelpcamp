@@ -5,7 +5,7 @@ export default function landing() {
     <div>
       <div id="landing-header">
         <h1>Welcome to YelpCamp!</h1>
-        <Link to="/campgrounds" className="btn btn-lg btn-success">
+        <Link to="/ui/campgrounds" className="btn btn-lg btn-success">
           View All Campgrounds
         </Link>
       </div>

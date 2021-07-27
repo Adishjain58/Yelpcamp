@@ -32,7 +32,7 @@ export default class signup extends Component {
           loading: false,
         });
         this.props.noty.success("Registered Successfully");
-        this.props.history.push("/login");
+        this.props.history.push("/ui/login");
       })
       .catch((err) => {
         this.setState({

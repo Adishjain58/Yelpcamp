@@ -10,34 +10,34 @@ export default class login extends Component {
     this.state = {
       username: "",
       password: "",
-      loading: false
+      loading: false,
     };
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.setState({
-      loading: true
+      loading: true,
     });
     axios
       .post("/login", this.state)
-      .then(user => {
+      .then((user) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         localStorage.setItem("user", JSON.stringify(user.data));
         this.props.noty.success("Logged in Successfully");
-        this.props.history.push("/campgrounds");
+        this.props.history.push("/ui/campgrounds");
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({
-          loading: false
+          loading: false,
         });
         this.props.noty.error(err.response.data);
       });

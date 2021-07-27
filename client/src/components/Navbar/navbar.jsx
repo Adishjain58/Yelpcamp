@@ -40,7 +40,7 @@ const Navbar = ({ state, logout, props }) => {
 
   const getMyCampgrounds = () => {
     Axios.get(
-      `/user/${JSON.parse(localStorage.getItem("user"))._id}/userCamps`
+      `/user/${JSON.parse(localStorage.getItem("user"))._id}/userCamps`,
     ).then((camps) => {
       console.log(camps.data, props);
       props.history.push("/");
@@ -59,7 +59,7 @@ const Navbar = ({ state, logout, props }) => {
               Yelpcamp
             </Link>
             <Link
-              to="/campgrounds"
+              to="/ui/campgrounds"
               style={{ textDecoration: "none" }}
               className={`ml-3 ${classes.btnStyle}`}
             >
@@ -69,10 +69,10 @@ const Navbar = ({ state, logout, props }) => {
 
           {!state.user.hasOwnProperty("username") && (
             <Fragment>
-              <Link to="/login" style={{ textDecoration: "none" }}>
+              <Link to="/ui/login" style={{ textDecoration: "none" }}>
                 <Button className={classes.btnStyle}>Login</Button>
               </Link>
-              <Link to="/signup" style={{ textDecoration: "none" }}>
+              <Link to="/ui/signup" style={{ textDecoration: "none" }}>
                 <Button className={classes.btnStyle}>Signup</Button>
               </Link>
             </Fragment>

@@ -44,7 +44,7 @@ class campgrounds extends Component {
                   </div>
                   <p>
                     <Link
-                      to={`/campgrounds/${camp._id}`}
+                      to={`/ui/campgrounds/${camp._id}`}
                       className="btn btn-info"
                     >
                       <i className="fa fa-info-circle"></i> &nbsp;More Info
@@ -65,7 +65,7 @@ class campgrounds extends Component {
           <p>
             <Link
               className="btn btn-primary btn-lg"
-              to="/campgrounds/create/new"
+              to="/ui/campgrounds/create/new"
             >
               Add new Campground
             </Link>

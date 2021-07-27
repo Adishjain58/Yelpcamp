@@ -40,17 +40,17 @@ class App extends React.Component {
         /> */}
         <RedirectIfNotAuth
           exact
-          path="/campgrounds/create/new"
+          path="/ui/campgrounds/create/new"
           component={CampGround}
           props={{ noty: this.props.noty }}
         ></RedirectIfNotAuth>
-        <Route exact path="/campgrounds" component={Campgrounds} />
+        <Route exact path="/ui/campgrounds" component={Campgrounds} />
         {/* <Route
           path="/login"
           render={props => <Login {...props} noty={this.props.noty} />}
         ></Route> */}
         <RedirectIfAuth
-          path="/login"
+          path="/ui/login"
           component={Login}
           props={{ noty: this.props.noty }}
         ></RedirectIfAuth>
@@ -59,18 +59,18 @@ class App extends React.Component {
           render={props => <Signup {...props} noty={this.props.noty} />}
         /> */}
         <RedirectIfAuth
-          path="/signup"
+          path="/ui/signup"
           component={Signup}
           props={{ noty: this.props.noty }}
         ></RedirectIfAuth>
         <Route
           exact
-          path="/campgrounds/:id"
+          path="/ui/campgrounds/:id"
           render={props => <Show {...props} noty={this.props.noty} />}
         ></Route>
         <Route
           exact
-          path="/campgrounds/:id/edit"
+          path="/ui/campgrounds/:id/edit"
           render={props => <CampgroundEdit {...props} noty={this.props.noty} />}
         ></Route>
         {/* <RedirectIfNotAuth
